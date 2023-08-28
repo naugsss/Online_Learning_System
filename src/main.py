@@ -1,6 +1,6 @@
 from src.controllers.admin import Admin
-from src.helpers.login_view import Login
-from src.helpers.menu_prompt_functions import prompt_admin_menu, prompt_student_menu, prompt_mentor_menu, \
+from src.helpers.login import Login
+from src.utils.menu_prompt_functions import prompt_admin_menu, prompt_student_menu, prompt_mentor_menu, \
     prompt_visitor_menu
 
 if __name__ == '__main__':

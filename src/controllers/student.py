@@ -1,5 +1,6 @@
 from src.controllers.courses import Courses
-from src.models.context_manager import DatabaseConnection
+from src.models.database import get_from_db
+from src.utils import queries
 
 
 class Student(Courses):
@@ -11,42 +12,34 @@ class Student(Courses):
         pass
 
     def list_course(self):
-        with DatabaseConnection() as db:
-            cursor = db.cursor()
-            cursor.execute("SELECT * FROM courses WHERE approval_status = %s and status = %s", ("approved", "active"))
-            content = cursor.fetchall()
+        content = get_from_db(queries.GET_COURSES_STATUS, ("approved", "active"))
+        if len(content) == 0:
+            print("No course exists.")
+        else:
             keys = ["Name", "Duration", "Price", "Rating"]
-
             print("Courses available : \n")
             for row in content:
-
                 values = [row[1], row[3], row[4], row[5]]
-
                 result = dict(zip(keys, values))
+
                 for key, value in result.items():
                     print(key + ": ", value)
                 print("***************")
+
             return content
 
     def approve_course(self):
         pass
 
+    @staticmethod
+    def view_student_details():
 
-    def view_student_details(self):
-        with DatabaseConnection() as db:
-            cursor = db.cursor()
-            cursor.execute("SELECT * FROM student_course")
-            result = cursor.fetchall()
-            print("Here are the details of the user:")
+        result = get_from_db(queries.GET_USER_DETAILS)
+        print("Here are the details of the user:")
 
-            for row in result:
-                cursor.execute("SELECT name FROM users WHERE id = %s", (row[1],))
-                user_name = cursor.fetchone()
-                cursor.execute("SELECT name FROM courses WHERE id = %s", (row[2],))
-                course_name = cursor.fetchall()
-                print("********************")
-                print("Name : ", user_name[0])
-                print("Course purchased : ", course_name[0][0])
-
-
-
+        for row in result:
+            user_name = get_from_db(queries.GET_NAME, (row[1],))
+            course_name = get_from_db(queries.GET_COURSE_NAME, (row[2],))
+            print("********************")
+            print("Name : ", user_name[0][0])
+            print("Course purchased : ", course_name[0][0])

@@ -3,7 +3,7 @@ from src.controllers.feeback import Feedback
 from src.controllers.mentor import Mentor
 from src.controllers.student import Student
 from src.controllers.visitor import Visitor
-from src.helpers.get_input import get_int_input
+from src.helpers.validators import get_int_input
 
 student = Student()
 mentor = Mentor()

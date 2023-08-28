@@ -1,5 +1,6 @@
 from src.controllers.courses import Courses
-from src.models.context_manager import DatabaseConnection
+from src.models.database import get_from_db
+from src.utils import queries
 
 
 class Visitor(Courses):
@@ -13,23 +14,18 @@ class Visitor(Courses):
         pass
 
     def list_course(self):
-        try:
-            with DatabaseConnection() as db:
-                cursor = db.cursor()
-                cursor.execute("SELECT * FROM courses WHERE approval_status = %s and status = %s", ("approved", "active"))
-                content = cursor.fetchall()
-                keys = ["Name", "Duration", "Price", "Rating"]
 
-                print("Courses available : \n")
-                for row in content:
-                    # print(row)
-                    values = [row[1], row[3], row[4], row[5]]
+        message = "There was some error in displaying course. Please try again."
+        content = get_from_db(queries.GET_COURSES_STATUS, ("approved", "active"), message)
+        keys = ["Name", "Duration", "Price", "Rating"]
 
-                    result = dict(zip(keys, values))
-                    for key, value in result.items():
-                        print(key + ": ", value)
-                    print("***************")
-            return content
-        except:
-            print("There was some error in displaying course. Please try again.")
+        print("Courses available : \n")
+        for row in content:
+            values = [row[1], row[3], row[4], row[5]]
+
+            result = dict(zip(keys, values))
+            for key, value in result.items():
+                print(key + ": ", value)
+            print("***************")
+        return content
 
