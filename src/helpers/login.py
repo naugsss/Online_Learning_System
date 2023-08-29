@@ -1,6 +1,6 @@
 import hashlib
 from datetime import date
-from src.helpers.validators import get_int_input, get_string_input, validate_email, validate_password
+from src.helpers.validators import get_int_input, get_string_input, validate_email, validate_password, get_alpha_input
 import maskpass
 from src.models.context_manager import DatabaseConnection
 from src.models.database import get_from_db
@@ -25,7 +25,7 @@ class Login:
         self.password = None
 
     def login_user(self):
-        self.username = get_string_input("Enter your username : ")
+        self.username = get_alpha_input("Enter your username : ")
         self.password = maskpass.askpass(prompt="Enter your password : ", mask="*")
         user_data = self.validate_user(self.username, self.password)
         if user_data != None:
@@ -34,10 +34,10 @@ class Login:
             return [self.role, self.user_id]
 
     def signup(self):
-        self.name = get_string_input("Enter your name : ")
+        self.name = get_alpha_input("Enter your name : ")
         self.email = get_string_input("Enter your email : ")
         if validate_email(self.email):
-            self.username = get_string_input("Enter your username : ")
+            self.username = get_alpha_input("Enter your username : ")
             self.password = maskpass.askpass(prompt="Enter your password : ", mask="*")
             if validate_password(self.password):
                 self.user_id = self.add_user_details(self.name, self.email, self.username, self.password)
@@ -46,6 +46,7 @@ class Login:
                     if user_data is not None:
                         self.role = user_data[0]
                         self.user_id = user_data[1]
+                        # return tuple
                         return [self.role, self.user_id]
 
     def login_menu(self):
@@ -87,7 +88,7 @@ class Login:
                 val = (username, hashed_password, user_id, date.today())
                 cursor.execute(sql, val)
 
-                print("**** Account created successfully ****")
+                print("\n**** Account created successfully ****\n")
                 return user_id
         except:
             print("An error occurred while inserting into database. Please try again..")
@@ -108,10 +109,9 @@ class Login:
             else:
                 print("You entered wrong password. ")
 
-    @staticmethod
-    def get_role(user_id):
+    def get_role(self, user_id):
 
-        message = "Couldn't fetch a role."
+        message = "There was an error, please try again."
         result = get_from_db(queries.GET_USER_ROLES, (user_id,), message)
         role_id = result[0][2]
         return [role_id, user_id]

@@ -12,40 +12,41 @@ visitor = Visitor()
 feedback = Feedback()
 
 admin_menu = """
-    print("Choose an operation from the following : ")
-    print("1. View student details. ")
-    print("2. View feedback of courses. ")
-    print("3. Add a mentor. ")
-    print("4. List courses. ")
-    print("5. Delete course")
-    print("6. List earning of all mentors : ")
-    print("7. exit. ")
+    "Choose an operation from the following : "
+        "1. View student details. "
+        "2. View feedback of courses. "
+        "3. Add a mentor. "
+        "4. List courses. "
+        "5. Delete course. "
+        "6. List earning of all mentors. "
+        "7. exit. "
 """
 student_menu = """
-    print("Choose an operation from the following : ")
-    print("1. list all courses. ")
-    print("2. Purchase course. ")
-    print("3. My learning. ")
-    print("4. View feedback. ")
-    print("5. Add feedback. ")
-    print("6. exit. ")
+    "Choose an operation from the following : "
+        "1. list all courses. "
+        "2. Purchase course. "
+        "3. My learning. "
+        "4. View feedback. "
+        "5. Add feedback. "
+        "6. exit. "
 """
 
 mentor_menu = """
-    print("Choose an operation from the following : ")
-    print("1. Add course. ")
-    print("2. Calculate earning. ")
-    print("3. View feedback. ")
-    print("4. Add FAQ")
-    print("5. exit. ")
+    "Choose an operation from the following : "
+        "1. Add course. "
+        "2. Calculate earning. "
+        "3. View feedback. "
+        "4. Add FAQ. "
+        "5. exit. "
 """
 
 visitor_menu = """
-    print("Choose an operation from the following : ")
-    print("1. List all courses. ")
-    print("2. View FAQ. ")
-    print("3. Purchase course. ")
-    print("4. exit. ")
+    "Choose an operation from the following : "
+        "1. List all courses. "
+        "2. View FAQ. "
+        "3. Purchase course. "
+        "4. View feedback. "
+        "5. exit. "
 """
 
 
@@ -128,7 +129,7 @@ def prompt_visitor_menu(user_id):
     print(visitor_menu)
     try:
         user_input = get_int_input("Please enter your choice : ")
-        while user_input != 4:
+        while user_input != 5:
             if user_input == 1:
                 visitor.list_course()
             elif user_input == 2:
@@ -136,6 +137,8 @@ def prompt_visitor_menu(user_id):
             elif user_input == 3:
                 visitor.purchase_course(user_id)
                 return
+            elif user_input == 4:
+                feedback.view_feedback()
             else:
                 print("You entered wrong choice, please try again.. ")
             print(visitor_menu)
@@ -143,3 +146,4 @@ def prompt_visitor_menu(user_id):
     except:
         print("You entered a wrong choice, please try again ...")
         prompt_visitor_menu(user_id)
+

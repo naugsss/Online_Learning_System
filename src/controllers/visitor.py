@@ -1,12 +1,14 @@
 from src.controllers.courses import Courses
 from src.models.database import get_from_db
 from src.utils import queries
+from tabulate import tabulate
 
 
 class Visitor(Courses):
 
     def calculate_earning(self):
         pass
+
     def delete_course(self):
         pass
 
@@ -14,18 +16,13 @@ class Visitor(Courses):
         pass
 
     def list_course(self):
-
         message = "There was some error in displaying course. Please try again."
         content = get_from_db(queries.GET_COURSES_STATUS, ("approved", "active"), message)
-        keys = ["Name", "Duration", "Price", "Rating"]
 
-        print("Courses available : \n")
-        for row in content:
-            values = [row[1], row[3], row[4], row[5]]
-
-            result = dict(zip(keys, values))
-            for key, value in result.items():
-                print(key + ": ", value)
-            print("***************")
+        table = [(name, duration, price, rating) for (_, name, _, duration, price, rating, *_) in content]
+        headers = ["Name", "Duration (in months)", "Price", "Rating"]
+        table_str = tabulate(table, headers=headers, tablefmt="grid")
+        print(table_str)
         return content
+
 

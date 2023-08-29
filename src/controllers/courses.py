@@ -1,18 +1,18 @@
-from abc import abstractmethod, ABC
-from src.helpers.validators import get_string_input, get_int_input
+from tabulate import tabulate
+from src.helpers.validators import get_string_input, get_int_input, get_alpha_input
 from datetime import date
 from src.models.context_manager import DatabaseConnection
 from src.models.database import get_from_db, insert_into_db, update_db
 from src.utils import queries
 
 
-class Courses(ABC):
+class Courses:
 
     def __init__(self):
         pass
 
     def add_course(self, user_id):
-        course_name = get_string_input("Enter name of course : ")
+        course_name = get_alpha_input("Enter name of course : ")
         content = get_string_input("Enter content of course : ")
         duration = get_int_input("Enter duration of course in months : ")
         price = get_int_input("Enter price of course : ")
@@ -29,35 +29,24 @@ class Courses(ABC):
         except:
             print("There was an error in adding course.. Please try again")
 
-    @abstractmethod
     def list_course(self):
         print("This is an abstract method.")
 
-    @abstractmethod
     def delete_course(self):
         pass
 
-    @abstractmethod
-    def calculate_earning(self, user_id):
-        pass
-
-    # @abstractmethod
     def approve_course(self):
         pass
 
     def view_purchased_course(self, user_id):
         message = "There was an error in fetching the content. Please try again.."
         content = get_from_db(queries.GET_STUDENT_COURSES, (user_id,), message)
-        keys = ["Name", "Duration", "Price", "Rating"]
 
         print("Courses you've purchased : \n")
-        for row in content:
-            values = [row[1], row[3], row[4], row[5]]
-
-            result = dict(zip(keys, values))
-            for key, value in result.items():
-                print(key + ": ", value)
-            print("***************")
+        table = [(name, duration, price, rating) for (_, name, _, duration, price, rating, *_) in content]
+        headers = ["Name", "Duration (in months)", "Price", "Rating"]
+        table_str = tabulate(table, headers=headers, tablefmt="grid")
+        print(table_str)
 
         return content
 
@@ -82,16 +71,12 @@ class Courses(ABC):
 
         message = "There was some error, please try again.."
         content = get_from_db(queries.GET_COURSES_STATUS, ("approved", "active"), message)
-        keys = ["Name", "Duration", "Price", "Rating"]
 
         print("Courses available : \n")
-        for row in content:
-            values = [row[1], row[3], row[4], row[5]]
-
-            result = dict(zip(keys, values))
-            for key, value in result.items():
-                print(key + ": ", value)
-            print("***************")
+        table = [(name, duration, price, rating) for (_, name, _, duration, price, rating, *_) in content]
+        headers = ["Name", "Duration (in months)", "Price", "Rating"]
+        table_str = tabulate(table, headers=headers, tablefmt="grid")
+        print(table_str)
         user_input = get_string_input("Enter the name of course you wish to purchase : ")
         flag = 0
         for row in content:

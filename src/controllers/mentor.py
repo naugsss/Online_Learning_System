@@ -1,3 +1,5 @@
+from tabulate import tabulate
+
 from src.controllers.courses import Courses
 from src.helpers.validators import get_string_input
 from src.models.database import insert_into_db, get_from_db
@@ -31,12 +33,9 @@ class Mentor(Courses):
 
         message = "There was error in listing the courses."
         content = get_from_db(queries.GET_COURSES, ("approved",), message)
-        keys = ["Name", "Duration", "Price", "Rating", "Status"]
         print("Courses available : \n")
-        for row in content:
-            values = [row[1], row[3], row[4], row[5], row[8]]
 
-            result = dict(zip(keys, values))
-            for key, value in result.items():
-                print(key + ": ", value)
-            print("***************")
+        table = [(name, duration, price, rating, status) for (_, name, _, duration, price, rating, _, _, status, *_) in content]
+        headers = ["Name", "Duration (in months)", "Price", "Rating", "Status"]
+        table_str = tabulate(table, headers=headers, tablefmt="grid")
+        print(table_str)

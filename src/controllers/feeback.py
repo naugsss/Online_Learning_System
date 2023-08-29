@@ -1,4 +1,5 @@
 from datetime import date
+from tabulate import tabulate
 from src.controllers.student import Student
 from src.controllers.visitor import Visitor
 from src.helpers.validators import get_string_input, get_float_input, get_int_input
@@ -24,10 +25,10 @@ class Feedback:
                 result = get_from_db(queries.GET_FROM_COURSE_FEEDBACK, val, message)
 
                 if len(result) != 0:
-                    for value in result:
-                        print("Rating : ", value[3])
-                        print("Comment : ", value[4])
-                        print("************")
+                    table = [(rating, comment) for (_, _, _, rating, comment, *_) in result]
+                    headers = ["Rating", "Comment"]
+                    table_str = tabulate(table, headers=headers, tablefmt="grid")
+                    print(table_str)
                 else:
                     print("No feedback exists for this course.")
         if flag == 0:
@@ -37,11 +38,19 @@ class Feedback:
     def add_feedback(user_id):
         content = student.view_purchased_course(user_id)
         user_input = get_string_input("Enter the name of course you wish to add feedback to : ")
+        flag = 0
         for row in content:
             if row[1].lower() == user_input.lower():
+                flag = 1
                 print("**** Add feedback ****")
                 rating = get_float_input("Enter rating out of 5 : ")
+                while rating > 5 or rating <= 0:
+                    rating = get_float_input("Enter rating out of 5 : ")
+                    if 5 > rating > 0:
+                        break
                 comments = get_string_input("Enter any comment : ")
+                if comments == "":
+                    comments = "No comments."
                 val = (row[0], user_id, rating, comments, date.today())
                 message = "feedback was not added."
                 insert_into_db(queries.INSERT_INTO_COURSE_FEEDBACK, val, message)
@@ -53,6 +62,8 @@ class Feedback:
                 message = "There was error in updating the course."
                 update_db(queries.UPDATE_AVG_RATING, (ratings, row[0]), message)
                 print("**** Feedback added successfully ****")
+        if flag == 0:
+            print("No such course exists.")
 
     @staticmethod
     def view_faq():
@@ -65,16 +76,14 @@ class Feedback:
                 flag = 1
                 message = "There was some error"
                 result = get_from_db(queries.GET_FAQ, (row[1],), message)
-                keys = ["Question", "Answer"]
                 if result is None or len(result) == 0:
                     print("No FAQ exists for this course.")
                 else:
-                    for item in result:
-                        values = [item[13], item[14]]
-                        result = dict(zip(keys, values))
-                        for key, value in result.items():
-                            print(key + ": ", value)
-                        print("***************")
+                    table = [(question, answer) for (_, _, _, _, _, _, _, _, _, _, _, _, _, question, answer, *_) in
+                             result]
+                    headers = ["Question", "Answer"]
+                    table_str = tabulate(table, headers=headers, tablefmt="grid")
+                    print(table_str)
         if flag == 0:
             print("No such course exists.")
 
@@ -82,16 +91,12 @@ class Feedback:
     def add_faq(user_id):
         message = "There was some error while adding FAQ"
         content = insert_into_db(queries.GET_FAQ_DETAILS, (user_id,), message)
-        keys = ["Name", "Duration", "Price", "Rating"]
-
         print("Courses you've made : \n")
-        for row in content:
-            values = [row[4], row[6], row[7], row[8]]
 
-            result = dict(zip(keys, values))
-            for key, value in result.items():
-                print(key + ": ", value)
-            print("***************")
+        table = [(name, duration, price, rating) for (_, _, _, _, name, _, duration, price, rating, *_) in content]
+        headers = ["Name", "Duration (in months)", "Price", "Rating"]
+        table_str = tabulate(table, headers=headers, tablefmt="grid")
+        print(table_str)
 
         user_input = get_string_input("Enter the name of the course in which you want to add FAQ : ")
         for row in content:
@@ -109,3 +114,4 @@ class Feedback:
                         cnt += 1
 
                     print("**** FAQ added successfully ****")
+

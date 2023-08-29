@@ -1,3 +1,4 @@
+from tabulate import tabulate
 from src.controllers.courses import Courses
 from src.models.database import get_from_db
 from src.utils import queries
@@ -16,15 +17,12 @@ class Student(Courses):
         if len(content) == 0:
             print("No course exists.")
         else:
-            keys = ["Name", "Duration", "Price", "Rating"]
-            print("Courses available : \n")
-            for row in content:
-                values = [row[1], row[3], row[4], row[5]]
-                result = dict(zip(keys, values))
 
-                for key, value in result.items():
-                    print(key + ": ", value)
-                print("***************")
+            print("Courses available : \n")
+            table = [(name, duration, price, rating) for (_, name, _, duration, price, rating, *_) in content]
+            headers = ["Name", "Duration (in months)", "Price", "Rating"]
+            table_str = tabulate(table, headers=headers, tablefmt="grid")
+            print(table_str)
 
             return content
 
@@ -40,6 +38,6 @@ class Student(Courses):
         for row in result:
             user_name = get_from_db(queries.GET_NAME, (row[1],))
             course_name = get_from_db(queries.GET_COURSE_NAME, (row[2],))
-            print("********************")
-            print("Name : ", user_name[0][0])
-            print("Course purchased : ", course_name[0][0])
+            table_data = [[user_name[0][0], course_name[0][0]]]
+            print(tabulate(table_data, headers=['Name', 'Course Purchased'], tablefmt="grid"))
+
