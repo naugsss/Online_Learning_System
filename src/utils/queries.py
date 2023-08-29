@@ -7,7 +7,7 @@ GET_DETAILS_COURSES = "SELECT * FROM courses WHERE name = %s"
 GET_COURSES_STATUS = "SELECT * FROM courses WHERE approval_status = %s and status = %s"
 PURCHASE_COURSE_UID_CID = "SELECT * FROM student_course where uid = %s and cid = %s"
 INSERT_STUDENT_COURSES = "INSERT INTO student_course (uid, cid, purchased_on) VALUES (%s, %s, %s)"
-GET_NO_STUDENTS = "SELECT no_of_students from courses where id = %s"
+GET_NO_STUDENTS = "SELECT * from courses where id = %s"
 UPDATE_NO_OF_STUDENTS = "UPDATE courses SET no_of_students = %s where id = %s"
 GET_USER_ROLES = "SELECT * FROM user_roles where uid = %s"
 UPDATE_USER_ROLES = "UPDATE user_roles SET role_id = %s WHERE uid = %s"
@@ -24,12 +24,12 @@ GET_FAQ = "SELECT * FROM courses, course_faq WHERE name = %s AND courses.id = co
 GET_FAQ_DETAILS = "SELECT * FROM mentor_course, courses WHERE uid = %s and mentor_course.cid = courses.id"
 INSERT_FAQ = "INSERT INTO course_faq (cid, question, answer) VALUES (%s, %s, %s)"
 GET_FROM_AUTHENTICATION = "SELECT * FROM authentication WHERE username = %s"
-INSERT_INTO_USER_ROLES = "INSERT INTO user_roles (uid, role_id) VALUES (%s, %s)"
+UPDATE_INTO_USER_ROLES = "UPDATE user_roles SET role_id = %s WHERE uid = %s"
 GET_EARNING_DATA = "SELECT price, no_of_students, name FROM courses, mentor_course WHERE courses.id = mentor_course.cid AND uid = %s"
 GET_USER_DETAILS = "SELECT * FROM student_course"
 GET_COURSE_NAME = "SELECT name FROM courses WHERE id = %s"
 GET_PENDING_COURSE_COUNT = "SELECT COUNT(approval_status) FROM courses WHERE approval_status = %s and status = %s"
-
+GET_MENTOR_COURSE = "SELECT * FROM mentor_course, courses WHERE uid = %s AND mentor_course.cid = courses.id"
 
 
 

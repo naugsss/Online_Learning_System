@@ -1,8 +1,6 @@
 import re
 import maskpass
 
-regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-
 
 class invalidNumberException(Exception):
     """Input can't be less than 0"""
@@ -17,43 +15,22 @@ def get_float_input(message):
         return user_input
     except invalidNumberException:
         print("input cannot be less than 0.. please try again. ")
-        get_int_input(message)
+        get_float_input(message)
     except:
         print("Wrong input made.. please try again. ")
-        get_int_input(message)
+        get_float_input(message)
 
 
-def get_int_input(message):
-    try:
-        user_input = int(input(message))
-        if user_input <= 0:
-            raise invalidNumberException
-        return user_input
-    except invalidNumberException:
-        print("input cannot be less than 0.. please try again. ")
-        get_int_input(message)
-    except:
-        print("Wrong input made.. please try again. ")
-        return get_int_input(message)
-
-def input_comments(message):
-    user_input = input(message)
-    pattern = "^[A-Za-z]\\w{5, 29}$"
-    if re.match(pattern, user_input):
-        return True
-    else:
-        print("This is not a valid comment.")
-        if input_comments("Please enter a valid comment : "):
-            return True
+def validate_username(username):
+    pattern = '[A-Za-z1-9_]+'
+    matcher = re.fullmatch(pattern, username)
+    return matcher
 
 
-def get_alpha_input(message):
-    user_input = input(message)
-    if not user_input.isalpha():
-        print("Please enter only alphabetical characters.")
-        user_input = get_alpha_input(message)
-
-    return user_input
+def validate_name(name):
+    pattern = '[A-Za-z ]+'
+    matcher = re.fullmatch(pattern, name)
+    return matcher
 
 
 def get_string_input(message):
@@ -80,6 +57,7 @@ def validate_password(password):
 
 
 def validate_email(email):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
     if re.fullmatch(regex, email):
         return True
     else:
