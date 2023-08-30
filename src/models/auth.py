@@ -1,4 +1,5 @@
 import hashlib
+import re
 from datetime import date
 from src.helpers.inputs_and_validations import validate_email, validate_password, validate_username, validate_name
 import maskpass
@@ -6,7 +7,8 @@ from src.models.database import DatabaseConnection
 from src.utils import queries
 
 LOGIN_VIEW = """
-    ******** Welcome to Online Learning to System ********
+    ******** Welcome to Online Learning1
+     System ********
     
     1. Sign Up
     2. Login
@@ -39,6 +41,10 @@ class Login:
         self.input_email()
         if validate_email(self.email):
             self.input_user_name()
+            is_valid_username = DatabaseConnection.get_from_db(queries.GET_FROM_AUTHENTICATION, (self.username,))
+            if is_valid_username:
+                print("This username already exists. Please try with different username.")
+                return
             self.password = maskpass.askpass(prompt="Enter your password : ", mask="*")
             if validate_password(self.password):
                 self.user_id = self.add_user_details(self.name, self.email, self.username, self.password)
@@ -128,12 +134,10 @@ class Login:
 
 
 def input_choice():
-    user_input = int(input("Please enter your choice : "))
-    if user_input <= 0:
-        print("input cannot be less than 0.. please try again. ")
-        return input_choice()
-    elif user_input > 0:
-        return user_input
+    pattern = '[1-9]+'
+    user_input = input("Please enter your choice : ")
+    if re.fullmatch(pattern, user_input):
+        return int(user_input)
     else:
         print("Please enter valid number...")
         return input_choice()

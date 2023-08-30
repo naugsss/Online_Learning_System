@@ -1,5 +1,4 @@
 import re
-
 from tabulate import tabulate
 from datetime import date
 from src.models.database import DatabaseConnection
@@ -18,6 +17,10 @@ class Courses:
 
     def add_course(self, user_id):
         self.course_name = input_course_name()
+        is_valid_course_name = DatabaseConnection.get_from_db(queries.GET_DETAILS_COURSES, (self.course_name,))
+        if is_valid_course_name:
+            print("Same name course already exists. Please enter a different name.")
+            return
         self.content = input_course_content()
         self.duration = input_course_duration()
         self.price = input_course_price()

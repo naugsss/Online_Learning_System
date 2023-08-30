@@ -1,5 +1,4 @@
 from tabulate import tabulate
-
 from src.models.database import DatabaseConnection
 from src.utils import queries
 
