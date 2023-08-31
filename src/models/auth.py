@@ -4,11 +4,12 @@ from datetime import date
 from src.helpers.inputs_and_validations import validate_email, validate_password, validate_username, validate_name
 import maskpass
 from src.models.database import DatabaseConnection
-from src.utils import queries
+from src.models.fetch_json_data import JsonData
 
+
+get_query = JsonData.load_data()
 LOGIN_VIEW = """
-    ******** Welcome to Online Learning1
-     System ********
+    ******** Welcome to Online Learning System ********
     
     1. Sign Up
     2. Login
@@ -41,7 +42,7 @@ class Login:
         self.input_email()
         if validate_email(self.email):
             self.input_user_name()
-            is_valid_username = DatabaseConnection.get_from_db(queries.GET_FROM_AUTHENTICATION, (self.username,))
+            is_valid_username = DatabaseConnection.get_from_db(get_query["GET_FROM_AUTHENTICATION"], (self.username,))
             if is_valid_username:
                 print("This username already exists. Please try with different username.")
                 return
@@ -95,7 +96,7 @@ class Login:
 
     def validate_user(self, username, password):
         hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        response = DatabaseConnection.get_from_db(queries.GET_FROM_AUTHENTICATION, (username,))
+        response = DatabaseConnection.get_from_db(get_query["GET_FROM_AUTHENTICATION"], (username,))
 
         if response is None or len(response) == 0:
             print("No such user exists.")
@@ -108,7 +109,7 @@ class Login:
 
     def get_role(self, user_id):
 
-        result = DatabaseConnection.get_from_db(queries.GET_USER_ROLES, (user_id,))
+        result = DatabaseConnection.get_from_db(get_query["GET_USER_ROLES"], (user_id,))
         role_id = result[0][2]
         return [role_id, user_id]
 

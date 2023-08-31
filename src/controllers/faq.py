@@ -2,8 +2,10 @@ from tabulate import tabulate
 from src.controllers.courses import Courses
 from src.helpers.inputs_and_validations import get_string_input
 from src.models.database import DatabaseConnection
-from src.utils import queries
+from src.models.fetch_json_data import JsonData
+# from src.utils import queries
 
+get_query = JsonData.load_data()
 
 DatabaseConnection = DatabaseConnection()
 course = Courses()
@@ -21,7 +23,7 @@ class Faq:
         for row in content:
             if row[1].lower() == user_input.lower():
                 is_valid_input = True
-                result = DatabaseConnection.get_from_db(queries.GET_FAQ, (row[1],))
+                result = DatabaseConnection.get_from_db(get_query["GET_FAQ"], (row[1],))
                 if result is None or len(result) == 0:
                     print("No FAQ exists for this course.")
                 else:
@@ -34,7 +36,7 @@ class Faq:
             print("No such course exists.")
 
     def add_faq(self, user_id):
-        content = DatabaseConnection.insert_into_db(queries.GET_FAQ_DETAILS, (user_id,))
+        content = DatabaseConnection.insert_into_db(get_query["GET_FAQ_DETAILS"], (user_id,))
         print("Courses you've made : \n")
 
         table = [(name, duration, price, rating) for (_, _, _, _, name, _, duration, price, rating, *_) in content]
@@ -51,7 +53,7 @@ class Faq:
                 while cnt < faq_count:
                     question = get_string_input("Enter the question : ")
                     answer = get_string_input("Enter it's answer : ")
-                    DatabaseConnection.insert_into_db(queries.INSERT_FAQ, (row[3], question, answer))
+                    DatabaseConnection.insert_into_db(get_query["INSERT_FAQ"], (row[3], question, answer))
                     cnt += 1
 
                 print("**** FAQ added successfully ****")

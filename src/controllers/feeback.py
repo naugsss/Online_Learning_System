@@ -3,11 +3,12 @@ from tabulate import tabulate
 from src.controllers.courses import Courses
 from src.helpers.inputs_and_validations import get_string_input, get_float_input
 from src.models.database import DatabaseConnection
-from src.utils import queries
+from src.models.fetch_json_data import JsonData
+# from src.utils import queries
 
 course = Courses()
 DatabaseConnection = DatabaseConnection()
-
+get_query = JsonData.load_data()
 
 class Feedback:
 
@@ -19,7 +20,7 @@ class Feedback:
             if row[1].lower() == user_input.lower():
                 is_valid_input = True
                 val = (row[0],)
-                result = DatabaseConnection.get_from_db(queries.GET_FROM_COURSE_FEEDBACK, val)
+                result = DatabaseConnection.get_from_db(get_query["GET_FROM_COURSE_FEEDBACK"], val)
 
                 if len(result) != 0:
                     table = [(rating, comment) for (_, _, _, rating, comment, *_) in result]
@@ -49,12 +50,12 @@ class Feedback:
                 if comments == "":
                     comments = "No comments."
                 val = (row[0], user_id, rating, comments, date.today())
-                DatabaseConnection.insert_into_db(queries.INSERT_INTO_COURSE_FEEDBACK, val)
+                DatabaseConnection.insert_into_db(get_query["INSERT_INTO_COURSE_FEEDBACK"], val)
 
-                ratings = DatabaseConnection.get_from_db(queries.GET_AVG_RATING_COURSE_FEEDBACK, (row[0],))
+                ratings = DatabaseConnection.get_from_db(get_query["GET_AVG_RATING_COURSE_FEEDBACK"], (row[0],))
                 ratings = round(ratings[0][0], 2)
 
-                DatabaseConnection.update_db(queries.UPDATE_AVG_RATING, (ratings, row[0]))
+                DatabaseConnection.update_db(get_query["UPDATE_AVG_RATING"], (ratings, row[0]))
                 print("**** Feedback added successfully ****")
         if not is_valid_input:
             print("No such course exists.")

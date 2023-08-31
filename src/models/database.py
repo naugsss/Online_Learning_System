@@ -1,24 +1,19 @@
 import mysql.connector
 from dotenv import load_dotenv
 import logging
+import json
+
 load_dotenv()
 
 
 class DatabaseConnection:
 
     def __init__(self):
-        # self.db = mysql.connector.connect(
-        #     host=os.getenv("HOST"),
-        #     user=os.getenv("USER"),
-        #     password=os.getenv("PASSWORD"),
-        #     database=os.getenv("DATABASE"),
-        #     autocommit=os.getenv("AUTOCOMMIT")
-        # )
 
         self.db = mysql.connector.connect(
             host="localhost",
-            user="naugs",
-            password="ashupatna123##",
+            user="root",
+            password="naugs",
             database="lms",
             autocommit=True
         )
@@ -30,6 +25,9 @@ class DatabaseConnection:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.db.close()
+
+    with open('E:\projects\Online_Learning_System\src\\utils\data.json', 'r') as json_file:
+        data = json.load(json_file)
 
     def insert_into_db(self, query, val=None):
         try:
