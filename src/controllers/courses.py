@@ -65,6 +65,9 @@ class Courses:
             content = DatabaseConnection.get_from_db(queries.GET_MENTOR_COURSE, (user_id,))
             values = []
             total_earning = 0
+            if len(content) == 0 or content is None:
+                print("You haven't made any course till now.")
+                return
             for row in content:
                 total_earning += row[7]*row[10]
                 values.append([row[4], row[6], row[7], row[8], row[10], row[7]*row[10]])
@@ -185,8 +188,9 @@ class Courses:
 
 def input_course_name():
     user_input = input("Enter name of course : ")
-    regex = "^[a-zA-Z0-9 ]*$"
-    if not re.fullmatch(regex, user_input):
+    user_input = user_input.strip()
+    regex = "^[A-Za-z0-9- ]+$"
+    if not re.fullmatch(regex, user_input) or user_input == '':
         print("Please enter valid characters.")
         user_input = input_course_name()
 
@@ -221,7 +225,7 @@ def input_course_duration():
     user_input = int(input("Enter duration of course (in hours) : "))
     if user_input <= 0:
         print("input cannot be less than 0.. please try again. ")
-        return input_course_price()
+        return input_course_duration()
     elif user_input > 0:
         return user_input
     else:
