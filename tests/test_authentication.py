@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import date
-from src.models.auth import Login
+from src.controllers.auth import Login
 import os
 import sys
 import unittest

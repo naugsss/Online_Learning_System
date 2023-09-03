@@ -1,19 +1,16 @@
-<<<<<<< HEAD
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-=======
 import unittest
 from unittest import mock
 
 import src.controllers.auth
->>>>>>> d87bc61d5a1788691b01114a7adcce6cc9b8fa2e
 from src.controllers.courses import Courses
 from src.models.database import DatabaseConnection
 from src.utils import queries
 import unittest
 
-<<<<<<< HEAD
+
 class AddCourseTest(unittest.TestCase):
     def test_add_course_successfully(self):
         course = Courses()
@@ -69,7 +66,7 @@ class AddCourseTest(unittest.TestCase):
 
         with self.assertRaises(Exception):
             course.contentadd_course(course_name, content, duration, price)
-=======
+
 
 class TestCourses(unittest.TestCase):
     # def test_add_course(self):
@@ -117,7 +114,6 @@ class TestCourses(unittest.TestCase):
 
         self.instance.username = "naugs"
         self.instance.password = "1234"
->>>>>>> d87bc61d5a1788691b01114a7adcce6cc9b8fa2e
 
         result = self.instance.validate_user(self, self.instance.username, self.instance.password)
         self.assertEqual(result, mock_validate_user)
