@@ -1,5 +1,5 @@
 from src.controllers.courses import Courses
-from src.models.auth import Login
+from src.controllers.auth import Login
 from src.utils.menu_prompt_functions import prompt_admin_menu, prompt_student_menu, prompt_mentor_menu, \
     prompt_visitor_menu
 course = Courses()

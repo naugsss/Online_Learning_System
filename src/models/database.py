@@ -12,8 +12,8 @@ class DatabaseConnection:
 
         self.db = mysql.connector.connect(
             host="localhost",
-            user="root",
-            password="naugs",
+            user="naugs",
+            password="ashupatna123##",
             database="lms",
             autocommit=True
         )
@@ -26,7 +26,7 @@ class DatabaseConnection:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.db.close()
 
-    with open('E:\projects\Online_Learning_System\src\\utils\data.json', 'r') as json_file:
+    with open('C:\coding\WG\watchguard_daily_task_Aaryan\Online-Learning-System-Project - Copy with tests\src\\utils\query_data.json', 'r') as json_file:
         data = json.load(json_file)
 
     def insert_into_db(self, query, val=None):
