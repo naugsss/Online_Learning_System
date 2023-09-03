@@ -77,8 +77,13 @@ class Login:
 
         return [self.role, self.user_id]
 
+<<<<<<< HEAD:src/models/auth.py
     
     def add_user_details(self,name, email, username, password):
+=======
+
+    def add_user_details(self, name, email, username, password):
+>>>>>>> d87bc61d5a1788691b01114a7adcce6cc9b8fa2e:src/controllers/auth.py
 
         sql = "INSERT INTO users (name, email) VALUES (%s, %s)"
         val = (name, email)
