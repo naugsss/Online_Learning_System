@@ -77,8 +77,8 @@ class Login:
 
         return [self.role, self.user_id]
 
-    @staticmethod
-    def add_user_details(name, email, username, password):
+    
+    def add_user_details(self,name, email, username, password):
 
         sql = "INSERT INTO users (name, email) VALUES (%s, %s)"
         val = (name, email)

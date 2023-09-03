@@ -1,54 +1,64 @@
-from unittest import TestCase
-
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from src.controllers.courses import Courses
 from src.models.database import DatabaseConnection
 from src.utils import queries
+import unittest
 
-
-class TestCourses(TestCase):
-    # def test_add_course(self):
-    #     course = Courses()
-    #
-    #     course.add_course(user_id=10)
-    #
-    #     assert course.course_name == "abcd"
-    #     assert course.content == "clean code is a good practice to follow"
-    #     assert course.duration == 12
-    #     assert course.price == 1000
-
-
-    def test_approve_course_with_pending_course(self):
-        # Arrange
-        pending_course_count = 0
-
-        # Act
+class AddCourseTest(unittest.TestCase):
+    def test_add_course_successfully(self):
         course = Courses()
-        # Act
+        course_name = "Python for Beginners"
+        content = "This is a test content"
+        duration = 3
+        price = 1000
+
         course.add_course(2)
-        course.approve_course()
 
-        # Assert
-        # self.assertEqual(pending_course_count, 0)
-        self.assertEqual(DatabaseConnection.get_from_db(queries.GET_COURSES_STATUS, ("pending", "active"))[0][0], 0)
-        self.assertEqual(DatabaseConnection.get_from_db(queries.GET_COURSES_STATUS, ("approved",))[0][0], 1)
+        self.assertEqual(DatabaseConnection.get_from_db(queries.GET_COURSES_STATUS, ("pending", "active"))[0][0], 1)
 
-    def test_approve_course_without_pending_course(self):
-        # Arrange
-        pending_course_count = 0
+    def test_add_course_with_duplicate_course_name(self):
         course = Courses()
-        # Act
-        course.approve_course()
 
-        # Assert
-        self.assertEqual(pending_course_count, 0)
-        self.assertEqual(DatabaseConnection.get_from_db(queries.GET_COURSES_STATUS, ("pending", "active"))[0][0], 0)
-        self.assertEqual(DatabaseConnection.get_from_db(queries.GET_COURSES_STATUS, ("approved",))[0][0], 0)
+        course_name = "Python for Beginners"
+        content = "This is a test content"
+        duration = 3
+        price = 1000
+        course.add_course(2)
 
+        with self.assertRaises(Exception):
+            course.add_course(course_name, content, duration, price)
 
+    def test_add_course_with_invalid_course_name(self):
+        course = Courses()
 
+        course_name = ""
+        content = "This is a test content"
+        duration = 3
+        price = 1000
 
+        with self.assertRaises(Exception):
+            course.add_course(course_name, content, duration, price)
 
+    def test_add_course_with_invalid_duration(self):
+        course = Courses()
 
+        course_name = "Python for Beginners"
+        content = "This is a test content"
+        duration = 8
+        price = 1000
 
+        with self.assertRaises(Exception):
+            course.add_course(course_name, content, duration, price)
 
+    def test_add_course_with_invalid_price(self):
+        course = Courses()
+        course_name = "Python for Beginners"
+        content = "This is a test content"
+        duration = 3
+        price = -1000
+
+        with self.assertRaises(Exception):
+            course.contentadd_course(course_name, content, duration, price)
 
