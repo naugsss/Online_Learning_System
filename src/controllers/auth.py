@@ -1,11 +1,12 @@
 import hashlib
 import re
 from datetime import date
-from src.helpers.inputs_and_validations import validate_email, validate_password, validate_username, validate_name
 import maskpass
-from src.models.database import DatabaseConnection
+from src.helpers.inputs_and_validations import validate_email, validate_password, \
+    validate_username, validate_name
 from src.models.fetch_json_data import JsonData
 
+from src.models.database import DatabaseConnection
 
 get_query = JsonData.load_data()
 LOGIN_VIEW = """
@@ -76,7 +77,6 @@ class Login:
                 user_input = input_choice()
 
         return [self.role, self.user_id]
-
 
     def add_user_details(self, name, email, username, password):
 

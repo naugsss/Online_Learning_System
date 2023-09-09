@@ -26,7 +26,7 @@ class DatabaseConnection:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.db.close()
 
-    with open('C:\coding\WG\watchguard_daily_task_Aaryan\Online-Learning-System-Project - Copy with tests\src\\utils\query_data.json', 'r') as json_file:
+    with open(r'C:\\coding\WG\watchguard_daily_task_Aaryan\\online learning\\Online_Learning_System\src\\utils\\query_data.json', 'r') as json_file:
         data = json.load(json_file)
 
     def insert_into_db(self, query, val=None):
