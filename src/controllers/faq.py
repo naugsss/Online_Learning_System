@@ -26,7 +26,7 @@ class Faq:
             if row[1].lower() == user_input.lower():
                 is_valid_input = True
 
-                result = DatabaseConnection.get_from_db(get_query["GET_FAQ"], (row[1],))
+                result = DatabaseConnection.get_from_db(get_query.get("GET_FAQ"), (row[1],))
                 if result is None or len(result) == 0:
                     print("No FAQ exists for this course.")
                 else:
@@ -49,7 +49,7 @@ class Faq:
                 while cnt < faq_count:
                     question = get_string_input("Enter the question : ")
                     answer = get_string_input("Enter it's answer : ")
-                    DatabaseConnection.insert_into_db(get_query["INSERT_FAQ"], (row[3], question, answer))
+                    DatabaseConnection.insert_into_db(get_query.get("INSERT_FAQ"), (row[3], question, answer))
                     cnt += 1
 
                 print("**** FAQ added successfully ****")

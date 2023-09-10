@@ -45,7 +45,7 @@ class EntryMenu:
                 elif user_input == 4:
                     course.list_course(role, user_id)
                 elif user_input == 5:
-                    self.delete_course(user_id)
+                    self.input_delete_course_name(user_id)
                 elif user_input == 6:
                     earning.calculate_all_mentor_earning()
                 else:
@@ -64,7 +64,7 @@ class EntryMenu:
                 if user_input == 1:
                     course.list_course(role, user_id)
                 elif user_input == 2:
-                    course.purchase_course(user_id)
+                    self.list_purchasable_course(user_id)
                 elif user_input == 3:
                     student.view_course_content(user_id)
                 elif user_input == 4:
@@ -119,7 +119,7 @@ class EntryMenu:
                 elif user_input == 2:
                     faq.view_faq(user_id)
                 elif user_input == 3:
-                    course.purchase_course(user_id)
+                    self.list_purchasable_course(user_id)
                 elif user_input == 4:
                     self.view_course_feedback(role)
                 else:
@@ -197,19 +197,48 @@ class EntryMenu:
             print("Wrong input made... please try again. ")
             return self.input_course_content()
 
-    def delete_course(self, user_id):
+    def input_delete_course_name(self, user_id):
         content = course.list_course(2, user_id)
         if content is None:
             return
         course_to_delete = self.input_course_name()
-        course.delete_course(course_to_delete, content)
+        is_valid_course_name, course_id = self.check_valid_course(course_to_delete, content)
+        if is_valid_course_name:
+            course_to_delete = is_valid_course_name
+            course.delete_course(course_to_delete)
+
+    def list_purchasable_course(self, user_id):
+        content = course.list_course(4, user_id)
+        if content is None:
+            return
+        purchase_course_name = self.input_purchase_course_name()
+        is_valid_course_name, course_id = self.check_valid_course(purchase_course_name, content)
+        if is_valid_course_name:
+            course.purchase_course(user_id, course_id)
+
+    def check_valid_course(self, course_name, content):
+        is_valid_course = False
+        course_id = None
+        for row in content:
+            if row[1].lower() == course_name.lower():
+                is_valid_course = True
+                course_name = row[1]
+                course_id = row[0]
+
+        if not is_valid_course:
+            print("No such course exists")
+            return False
+        else:
+            return [course_name, course_id]
 
     def view_course_feedback(self, user_id):
         content = course.list_course(2, user_id)
         if content is None:
             return
         course_name = get_string_input("Enter the name of course you wish to view feedback of : ")
-        feedback.view_course_feedback(course_name, content)
+        is_valid_course_name, course_id = self.check_valid_course(course_name, content)
+        if is_valid_course_name:
+            feedback.view_course_feedback(course_id)
 
     def check_pending_courses(self):
         query = get_query["PENDING_STATUS"]
@@ -223,7 +252,7 @@ class EntryMenu:
     def list_pending_course(self, pending_course_count):
         print("**************************")
         print("Pending Notification : ")
-        query = get_query["PENDING_STATUS"]
+        query = get_query.get("PENDING_STATUS")
         result = DatabaseConnection.get_from_db(query, ("pending",))
 
         print("Course details : \n")
@@ -234,14 +263,25 @@ class EntryMenu:
         course.approve_course(course_name, pending_course_count)
 
     def input_course_faq(self, user_id):
-        content = DatabaseConnection.get_from_db(get_query["GET_FAQ_DETAILS"], (user_id,))
+        content = DatabaseConnection.get_from_db(get_query.get("GET_FAQ_DETAILS"), (user_id,))
 
         if len(content) == 0 or content is None:
             print("No course exists")
             return
-        query = get_query["GET_FAQ_DETAILS"]
+        query = get_query("GET_FAQ_DETAILS")
         headers = ["Name", "Duration (in hrs )", "Price (in Rs.)", "Rating"]
         included_columns = [4, 6, 7, 8]
         print_courses_list(query, headers, "grid", included_columns, user_id)
         course_name = get_string_input("Enter the name of the course in which you want to add FAQ : ")
         faq.add_faq(content, course_name)
+
+    def input_purchase_course_name(self):
+        try:
+            user_input = input("Enter the name of course you wish to purchase : ")
+            if user_input.strip() == '':
+                print("Input cannot be empty. Please try again.")
+                user_input = self.input_purchase_course_name()
+            return user_input
+        except:
+            print("Wrong input made... please try again. ")
+            return self.input_purchase_course_name()

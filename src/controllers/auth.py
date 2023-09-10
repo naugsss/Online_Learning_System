@@ -41,7 +41,7 @@ class Login:
         self.input_email()
         if validate_email(self.email):
             self.input_user_name()
-            is_valid_username = DatabaseConnection.get_from_db(get_query["GET_FROM_AUTHENTICATION"], (self.username,))
+            is_valid_username = DatabaseConnection.get_from_db(get_query.get("GET_FROM_AUTHENTICATION"), (self.username,))
             if is_valid_username:
                 print("This username already exists. Please try with different username.")
                 return
@@ -78,7 +78,7 @@ class Login:
 
     def validate_user(self, username, password):
         hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        response = DatabaseConnection.get_from_db(get_query["GET_FROM_AUTHENTICATION"], (username,))
+        response = DatabaseConnection.get_from_db(get_query.get("GET_FROM_AUTHENTICATION"), (username,))
 
         if response is None or len(response) == 0:
             print("No such user exists.")
@@ -90,16 +90,16 @@ class Login:
                 print("You entered wrong password. ")
 
     def get_role(self, user_id):
-        result = DatabaseConnection.get_from_db(get_query["GET_USER_ROLES"], (user_id,))
+        result = DatabaseConnection.get_from_db(get_query.get("GET_USER_ROLES"), (user_id,))
         role_id = result[0][2]
         return [role_id, user_id]
 
     @staticmethod
     def update_role(user_id):
-        result = DatabaseConnection.get_from_db(get_query["GET_USER_ROLES"], (user_id,))
+        result = DatabaseConnection.get_from_db(get_query.get("GET_USER_ROLES"), (user_id,))
         for row in result:
             if row[2] == 4:
-                DatabaseConnection.update_db(get_query["UPDATE_USER_ROLES"], (2, user_id))
+                DatabaseConnection.update_db(get_query.get("UPDATE_USER_ROLES"), (2, user_id))
                 return
 
     def input_user_name(self):
