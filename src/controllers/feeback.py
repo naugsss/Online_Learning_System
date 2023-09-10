@@ -4,20 +4,18 @@ from src.controllers.courses import Courses
 from src.helpers.inputs_and_validations import get_string_input, get_float_input
 from src.models.database import DatabaseConnection
 from src.models.fetch_json_data import JsonData
-# from src.utils import queries
 
 course = Courses()
 DatabaseConnection = DatabaseConnection()
 get_query = JsonData.load_data()
 
+
 class Feedback:
 
-    def view_feedback(self, role):
-        content = course.list_course(2, role)
-        user_input = get_string_input("Enter the name of course you wish to view feedback of : ")
+    def view_course_feedback(self, course_name, content):
         is_valid_input = False
         for row in content:
-            if row[1].lower() == user_input.lower():
+            if row[1].lower() == course_name.lower():
                 is_valid_input = True
                 val = (row[0],)
                 result = DatabaseConnection.get_from_db(get_query["GET_FROM_COURSE_FEEDBACK"], val)
@@ -32,8 +30,7 @@ class Feedback:
         if not is_valid_input:
             print("No such course exists.")
 
-
-    def add_feedback(self, user_id):
+    def add_course_feedback(self, user_id):
         content = course.view_purchased_course(user_id)
         user_input = get_string_input("Enter the name of course you wish to add feedback to : ")
         is_valid_input = False

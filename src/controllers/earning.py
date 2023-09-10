@@ -1,7 +1,6 @@
 from tabulate import tabulate
 from src.models.database import DatabaseConnection
 from src.models.fetch_json_data import JsonData
-# from src.utils import queries
 
 DatabaseConnection = DatabaseConnection()
 get_query = JsonData.load_data()

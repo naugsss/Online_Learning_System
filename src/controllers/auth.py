@@ -1,11 +1,9 @@
 import hashlib
 import re
-from datetime import date
 import maskpass
 from src.helpers.inputs_and_validations import validate_email, validate_password, \
     validate_username, validate_name
 from src.models.fetch_json_data import JsonData
-
 from src.models.database import DatabaseConnection
 
 get_query = JsonData.load_data()
@@ -49,13 +47,13 @@ class Login:
                 return
             self.password = maskpass.askpass(prompt="Enter your password : ", mask="*")
             if validate_password(self.password):
-                self.user_id = self.add_user_details(self.name, self.email, self.username, self.password)
+                self.user_id = DatabaseConnection.insert_user_details(self.name, self.email, self.username,
+                                                                      self.password)
                 if self.user_id:
                     user_data = self.login_user()
                     if user_data is not None:
                         self.role = user_data[0]
                         self.user_id = user_data[1]
-                        # return tuple
                         return [self.role, self.user_id]
 
     def login_menu(self):
@@ -78,22 +76,6 @@ class Login:
 
         return [self.role, self.user_id]
 
-    def add_user_details(self, name, email, username, password):
-
-        sql = "INSERT INTO users (name, email) VALUES (%s, %s)"
-        val = (name, email)
-        user_id = DatabaseConnection.get_role_from_db(sql, val)
-        sql = "INSERT INTO user_roles (uid, role_id) VALUES (%s, %s)"
-        val = (user_id, 4)
-        DatabaseConnection.insert_into_db(sql, val)
-
-        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        sql = "INSERT INTO authentication (username, password, uid, create_at) VALUES (%s, %s, %s, %s)"
-        val = (username, hashed_password, user_id, date.today())
-        DatabaseConnection.insert_into_db(sql, val)
-        print("\n**** Account created successfully ****\n")
-        return user_id
-
     def validate_user(self, username, password):
         hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
         response = DatabaseConnection.get_from_db(get_query["GET_FROM_AUTHENTICATION"], (username,))
@@ -108,10 +90,17 @@ class Login:
                 print("You entered wrong password. ")
 
     def get_role(self, user_id):
-
         result = DatabaseConnection.get_from_db(get_query["GET_USER_ROLES"], (user_id,))
         role_id = result[0][2]
         return [role_id, user_id]
+
+    @staticmethod
+    def update_role(user_id):
+        result = DatabaseConnection.get_from_db(get_query["GET_USER_ROLES"], (user_id,))
+        for row in result:
+            if row[2] == 4:
+                DatabaseConnection.update_db(get_query["UPDATE_USER_ROLES"], (2, user_id))
+                return
 
     def input_user_name(self):
         self.username = input("Enter your username : ")

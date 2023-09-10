@@ -2,7 +2,6 @@ from tabulate import tabulate
 from src.controllers.courses import Courses
 from src.models.database import DatabaseConnection
 from src.models.fetch_json_data import JsonData
-# from src.utils import queries
 
 DatabaseConnection = DatabaseConnection()
 get_query = JsonData.load_data()
@@ -15,7 +14,6 @@ class Student(Courses):
         if len(content) == 0:
             print("No course exists.")
         else:
-
             print("Courses available : \n")
             table = [(name, duration, price, rating) for (_, name, _, duration, price, rating, *_) in content]
             headers = ["Name", "Duration (in months)", "Price", "Rating"]
@@ -25,7 +23,6 @@ class Student(Courses):
             return content
 
     def view_student_details(self):
-
         result = DatabaseConnection.get_from_db(get_query["GET_USER_DETAILS"])
         print("Here are the details of the user:")
         values = []
