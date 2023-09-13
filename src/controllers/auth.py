@@ -1,8 +1,9 @@
 import hashlib
 import re
 import maskpass
+
 from src.helpers.inputs_and_validations import validate_email, validate_password, \
-    validate_username, validate_name
+    input_name, input_email, input_user_name
 from src.models.fetch_json_data import JsonData
 from src.models.database import DatabaseConnection
 
@@ -28,7 +29,7 @@ class Login:
         self.password = None
 
     def login_user(self):
-        self.input_user_name()
+        input_user_name(self)
         self.password = maskpass.askpass(prompt="Enter your password : ", mask="*")
         user_data = self.validate_user(self.username, self.password)
         if user_data != None:
@@ -37,10 +38,10 @@ class Login:
             return [self.role, self.user_id]
 
     def sign_up(self):
-        self.input_name()
-        self.input_email()
+        input_name(self)
+        input_email(self)
         if validate_email(self.email):
-            self.input_user_name()
+            input_user_name(self)
             is_valid_username = DatabaseConnection.get_from_db(get_query.get("GET_FROM_AUTHENTICATION"), (self.username,))
             if is_valid_username:
                 print("This username already exists. Please try with different username.")
@@ -102,25 +103,18 @@ class Login:
                 DatabaseConnection.update_db(get_query.get("UPDATE_USER_ROLES"), (2, user_id))
                 return
 
-    def input_user_name(self):
-        self.username = input("Enter your username : ")
-        is_valid_username = validate_username(self.username)
-        if is_valid_username is None:
-            print("Enter a valid username...")
-            self.input_user_name()
+    # def input_user_name(self):
+    #     self.username = input("Enter your username : ")
+    #     is_valid_username = validate_username(self.username)
+    #     if is_valid_username is None:
+    #         print("Enter a valid username...")
+    #         self.input_user_name()
 
-    def input_name(self):
-        self.name = input("Enter your name : ")
-        is_valid_name = validate_name(self.name)
-        if is_valid_name is None:
-            print("Enter a valid name...")
-            self.input_name()
-
-    def input_email(self):
-        self.email = input("Enter your email : ")
-        is_valid_email = validate_email(self.email)
-        if is_valid_email is None:
-            self.input_email()
+    # def input_email(self):
+    #     self.email = input("Enter your email : ")
+    #     is_valid_email = validate_email(self.email)
+    #     if is_valid_email is None:
+    #         self.input_email()
 
 
 def input_choice():

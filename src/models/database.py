@@ -1,8 +1,9 @@
 import hashlib
 from datetime import date
-import mysql.connector
-import logging
 import json
+import logging
+
+import mysql.connector
 
 
 class DatabaseConnection:

@@ -31,38 +31,16 @@ class Courses:
 
     def list_course(self, role, user_id):
         if role == 1:
-            query = get_query.get("GET_COURSES")
-            headers = ["Name", "Duration (in hrs)", "Price (in Rs.)", "Rating", "Status"]
-            included_columns = [1, 3, 4, 5, 8]
-            print_courses_list(query, headers, "grid", included_columns, "approved")
+            self.print_course_list_role_1()
 
         elif role == 2 or role == 4:
-            print("Courses available : \n")
-            query = get_query.get("GET_COURSES_STATUS")
-            headers = ["Name", "Duration (in hrs)", "Price (in Rs.)", "Rating"]
-            included_columns = [1, 3, 4, 5]
-            content = print_courses_list(query, headers, "grid", included_columns, ("approved", "active"))
-            return content
+            return self.print_course_list_role_2_or_4()
 
         elif role == 3:
-            content = DatabaseConnection.get_from_db(get_query.get("GET_MENTOR_COURSE"), (user_id,))
-            values = []
-            total_earning = 0
-            if len(content) == 0 or content is None:
-                print("You haven't made any course till now.")
-                return
-            for row in content:
-                total_earning += row[7] * row[10]
-                values.append([row[4], row[6], row[7], row[8], row[10], row[7] * row[10]])
-
-            print(tabulate(values,
-                           headers=["Course Name", "Duration (in hrs) ", "Price (in Rs.)", "Rating",
-                                    "No. of students enrolled",
-                                    "Earning"], tablefmt="grid"))
-            print("Your total earning is : Rs. ", total_earning)
+            self.print_course_list_role_3(user_id)
 
     def delete_course(self, course_name):
-        DatabaseConnection.update_db(get_query("UPDATE_COURSE_STATUS"), ("deactive", course_name))
+        DatabaseConnection.update_db(get_query.get("UPDATE_COURSE_STATUS"), ("deactive", course_name))
         print("**** Course marked as deactivated successfully ****")
 
     def approve_course(self, course_name, pending_course_count):
@@ -83,7 +61,7 @@ class Courses:
         headers = ["Name", "Duration (in hrs)", "Price (in Rs.)", "Rating"]
         query = get_query.get("GET_STUDENT_COURSES")
         included_columns = [1, 3, 4, 5]
-        content = print_courses_list(query, headers, "grid", included_columns, user_id)
+        content = list_course_in_tabular_form(query, headers, "grid", included_columns, user_id)
         return content
 
     def view_course_content(self, user_id):
@@ -106,23 +84,60 @@ class Courses:
         if len(result) == 0 or result is None:
             DatabaseConnection.insert_into_db(get_query.get("INSERT_STUDENT_COURSES"),
                                               (user_id, course_id, date.today()))
-            no_of_students = DatabaseConnection.get_from_db(get_query.get("GET_NO_STUDENTS"), (course_id,))
-            updated_no_of_student = no_of_students[0][7] + 1
 
-            DatabaseConnection.update_db(get_query.get("UPDATE_NO_OF_STUDENTS"), (updated_no_of_student, course_id))
+            no_of_students = DatabaseConnection.get_from_db(get_query.get("GET_NO_STUDENTS"), (course_id,))
+
+            if no_of_students and len(no_of_students) > 0:
+                updated_no_of_student = no_of_students[0][7] + 1
+                DatabaseConnection.update_db(get_query.get("UPDATE_NO_OF_STUDENTS"), (updated_no_of_student, course_id))
+            else:
+                print("Error: Could not update the number of students.")
+                return
+
             print("\n**** Course purchased successfully ****")
             Login.update_role(user_id)
         else:
             print("\nYou've already purchased this course.")
 
+    def print_course_list_role_1(self):
+        query = get_query.get("GET_COURSES")
+        headers = ["Name", "Duration (in hrs)", "Price (in Rs.)", "Rating", "Status"]
+        included_columns = [1, 3, 4, 5, 8]
+        list_course_in_tabular_form(query, headers, "grid", included_columns, "approved")
 
-def print_courses_list(query, headers, table_format="grid", columns=None, dynamic_params=None):
-    if dynamic_params is None:
-        dynamic_params = ()
-    elif not isinstance(dynamic_params, tuple):
-        dynamic_params = (dynamic_params,)
+    def print_course_list_role_2_or_4(self):
+        print("Courses available : \n")
+        query = get_query.get("GET_COURSES_STATUS")
+        headers = ["Name", "Duration (in hrs)", "Price (in Rs.)", "Rating"]
+        included_columns = [1, 3, 4, 5]
+        content = list_course_in_tabular_form(query, headers, "grid", included_columns, ("approved", "active"))
+        return content
 
-    content = DatabaseConnection.get_from_db(query, dynamic_params)
+    def print_course_list_role_3(self, user_id):
+        content = DatabaseConnection.get_from_db(get_query.get("GET_MENTOR_COURSE"), (user_id,))
+        values = []
+        total_earning = 0
+        if len(content) == 0 or content is None:
+            print("You haven't made any course till now.")
+            return
+        for row in content:
+            total_earning += row[7] * row[10]
+            values.append([row[4], row[6], row[7], row[8], row[10], row[7] * row[10]])
+
+        print(tabulate(values,
+                       headers=["Course Name", "Duration (in hrs) ", "Price (in Rs.)", "Rating",
+                                "No. of students enrolled",
+                                "Earning"], tablefmt="grid"))
+        print("Your total earning is : Rs. ", total_earning)
+
+
+def list_course_in_tabular_form(query, headers, table_format="grid", columns=None, params=None):
+    if params is None:
+        params = ()
+    elif not isinstance(params, tuple):
+        params = (params,)
+
+    content = DatabaseConnection.get_from_db(query, params)
     if len(content) == 0:
         print("No course exists.")
         return

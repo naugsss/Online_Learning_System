@@ -5,6 +5,7 @@ from src.models.fetch_json_data import JsonData
 DatabaseConnection = DatabaseConnection()
 get_query = JsonData.load_data()
 
+
 class Earning:
     def calculate_mentor_earning(self, user_id):
         result = DatabaseConnection.get_from_db(get_query.get("GET_EARNING_DATA"), (user_id,))

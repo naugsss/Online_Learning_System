@@ -1,13 +1,9 @@
-import sys
-import os
-from src.helpers.inputs_and_validations import get_string_input
-
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import re
-from src.controllers.courses import Courses, print_courses_list
+from src.helpers.inputs_and_validations import get_string_input, get_float_input
+from src.controllers.courses import Courses, list_course_in_tabular_form
 from src.controllers.earning import Earning
 from src.controllers.faq import Faq
-from src.controllers.feeback import Feedback
+from src.controllers.feedback import Feedback
 from src.controllers.mentor import Mentor
 from src.controllers.student import Student
 from src.models.database import DatabaseConnection
@@ -27,6 +23,22 @@ earning = Earning()
 
 
 class EntryMenu:
+    # def __init__(self, role, user_id):
+    #     self.role = role
+    #     self.user_id = user_id
+    #
+    #     if role == 1:
+    #         self.prompt_admin_menu(role, user_id)
+    #     elif role == 2:
+    #         # student
+    #         self.prompt_student_menu(role, user_id)
+    #     elif role == 3:
+    #         # mentor
+    #         self.prompt_mentor_menu(role, user_id)
+    #     elif role == 4:
+    #         # visitor
+    #         self.prompt_visitor_menu(role, user_id)
+
     def prompt_admin_menu(self, role, user_id):
         pending_course_count = self.check_pending_courses()
         print(pending_course_count)
@@ -70,7 +82,7 @@ class EntryMenu:
                 elif user_input == 4:
                     self.view_course_feedback(role)
                 elif user_input == 5:
-                    feedback.add_course_feedback(user_id)
+                    self.add_course_feedback(user_id)
                 else:
                     print("You entered wrong choice, please try again.. ")
                 print(student_menu)
@@ -99,7 +111,7 @@ class EntryMenu:
                 elif user_input == 6:
                     self.input_course_faq(user_id)
                 elif user_input == 7:
-                    faq.view_faq(user_id)
+                    self.view_course_faq(user_id)
                 else:
                     print("You entered wrong choice, please try again.. ")
                 print(mentor_menu)
@@ -117,7 +129,7 @@ class EntryMenu:
                 if user_input == 1:
                     course.list_course(role, user_id)
                 elif user_input == 2:
-                    faq.view_faq(user_id)
+                    self.view_course_faq(user_id)
                 elif user_input == 3:
                     self.list_purchasable_course(user_id)
                 elif user_input == 4:
@@ -144,7 +156,7 @@ class EntryMenu:
 
     def input_course_details(self, user_id):
         self.course_name = self.input_course_name()
-        is_valid_course_name = DatabaseConnection.get_from_db(get_query["GET_DETAILS_COURSES"], (self.course_name,))
+        is_valid_course_name = DatabaseConnection.get_from_db(get_query.get("GET_DETAILS_COURSES"), (self.course_name,))
         if is_valid_course_name:
             print("Same name course already exists. Please enter a different name.")
             return
@@ -240,6 +252,45 @@ class EntryMenu:
         if is_valid_course_name:
             feedback.view_course_feedback(course_id)
 
+    def add_course_feedback(self, user_id):
+        content = course.view_purchased_course(user_id)
+        if content is None:
+            return
+        course_name = get_string_input("Enter the name of course you wish to add feedback of : ")
+        is_valid_course_name, course_id = self.check_valid_course(course_name, content)
+        if is_valid_course_name:
+            self.input_course_feedback(course_id, user_id)
+
+    def input_course_feedback(self, course_id, user_id):
+        print("**** Add feedback ****")
+        rating = float(input("Enter rating out of 5 : "))
+        while rating > 5 or rating <= 0:
+            rating = get_float_input("Enter rating out of 5 : ")
+            if rating > 0 and rating < 5:
+                break
+        comments = input("Enter any comment : ")
+        if comments == "":
+            comments = "No comments."
+        feedback.add_course_feedback(course_id, rating, comments, user_id)
+
+    def view_course_faq(self, user_id):
+        content = course.list_course(4, user_id)
+        if content is None:
+            return
+        course_name = get_string_input("Enter the name of course you wish to view FAQ of : ")
+        is_valid_course_name, course_id = self.check_valid_course(course_name, content)
+        if is_valid_course_name:
+            faq.view_faq(course_name)
+
+    # def add_course_feedback(self, user_id):
+    #     content = course.view_purchased_course(user_id)
+    #     if content is None:
+    #         return
+    #     course_name = get_string_input("Enter the name of course you wish to add feedback to : ")
+    #     is_valid_course_name, course_id = self.check_valid_course(course_name, content)
+    #     if is_valid_course_name:
+    #         feedback.add_course_feedback(user_id)
+
     def check_pending_courses(self):
         query = get_query["PENDING_STATUS"]
         result = DatabaseConnection.get_from_db(query=query, val=("pending",))
@@ -259,7 +310,7 @@ class EntryMenu:
         course_name = result[0][1]
         headers = ["Name", "Duration (in months)", "Price"]
         included_columns = [1, 3, 4]
-        print_courses_list(query, headers, "grid", included_columns, ("pending",))
+        list_course_in_tabular_form(query, headers, "grid", included_columns, ("pending",))
         course.approve_course(course_name, pending_course_count)
 
     def input_course_faq(self, user_id):
@@ -268,10 +319,10 @@ class EntryMenu:
         if len(content) == 0 or content is None:
             print("No course exists")
             return
-        query = get_query("GET_FAQ_DETAILS")
+        query = get_query.get("GET_FAQ_DETAILS")
         headers = ["Name", "Duration (in hrs )", "Price (in Rs.)", "Rating"]
         included_columns = [4, 6, 7, 8]
-        print_courses_list(query, headers, "grid", included_columns, user_id)
+        list_course_in_tabular_form(query, headers, "grid", included_columns, user_id)
         course_name = get_string_input("Enter the name of the course in which you want to add FAQ : ")
         faq.add_faq(content, course_name)
 

@@ -64,3 +64,26 @@ def validate_email(email):
         user_email = get_string_input("Please enter a valid email : ")
         if validate_email(user_email):
             return True
+
+
+def input_email(self):
+    self.email = input("Enter your email : ")
+    is_valid_email = validate_email(self.email)
+    if is_valid_email is None:
+        self.input_email()
+
+
+def input_user_name(self):
+    self.username = input("Enter your username : ")
+    is_valid_username = validate_username(self.username)
+    if is_valid_username is None:
+        print("Enter a valid username...")
+        self.input_user_name()
+
+
+def input_name(self):
+    self.name = input("Enter your name : ")
+    is_valid_name = validate_name(self.name)
+    if is_valid_name is None:
+        print("Enter a valid name...")
+        self.input_name()

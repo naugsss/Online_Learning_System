@@ -1,5 +1,5 @@
 from tabulate import tabulate
-from src.controllers.courses import Courses, print_courses_list
+from src.controllers.courses import Courses
 from src.helpers.inputs_and_validations import get_string_input
 from src.models.database import DatabaseConnection
 from src.models.fetch_json_data import JsonData
@@ -15,29 +15,17 @@ class Faq:
     def __init__(self):
         pass
 
-    def view_faq(self, user_id):
-        content = course.list_course(4, user_id)
-        if content is None:
-            return
-        is_valid_input = False
-        user_input = get_string_input("Enter the name of the course of which you want to see FAQ : ")
+    def view_faq(self, course_name):
 
-        for row in content:
-            if row[1].lower() == user_input.lower():
-                is_valid_input = True
-
-                result = DatabaseConnection.get_from_db(get_query.get("GET_FAQ"), (row[1],))
-                if result is None or len(result) == 0:
-                    print("No FAQ exists for this course.")
-                else:
-                    table = [(question, answer) for (_, _, _, _, _, _, _, _, _, _, _, _, _, question, answer, *_) in
-                             result]
-                    headers = ["Question", "Answer"]
-                    table_str = tabulate(table, headers=headers, tablefmt="grid")
-                    print(table_str)
-        if not is_valid_input:
-            print("No such course exists.")
-            return
+        result = DatabaseConnection.get_from_db(get_query.get("GET_FAQ"), (course_name,))
+        if result is None or len(result) == 0:
+            print("No FAQ exists for this course.")
+        else:
+            table = [(question, answer) for (_, _, _, _, _, _, _, _, _, _, _, _, _, question, answer, *_) in
+                     result]
+            headers = ["Question", "Answer"]
+            table_str = tabulate(table, headers=headers, tablefmt="grid")
+            print(table_str)
 
     def add_faq(self, content, course_name):
         is_valid_input = False
