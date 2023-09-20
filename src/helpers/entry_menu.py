@@ -78,7 +78,7 @@ class EntryMenu:
                 elif user_input == 2:
                     self.list_purchasable_course(user_id)
                 elif user_input == 3:
-                    student.view_course_content(user_id)
+                    self.input_course_name_to_study_from(user_id)
                 elif user_input == 4:
                     self.view_course_feedback(role)
                 elif user_input == 5:
@@ -97,7 +97,7 @@ class EntryMenu:
         try:
             user_input = self.input_choice()
 
-            while user_input != 8:
+            while user_input != 11:
                 if user_input == 1:
                     self.input_course_details(user_id)
                 elif user_input == 2:
@@ -112,6 +112,12 @@ class EntryMenu:
                     self.input_course_faq(user_id)
                 elif user_input == 7:
                     self.view_course_faq(user_id)
+                elif user_input == 8:
+                    self.list_purchasable_course(user_id)
+                elif user_input == 9:
+                    self.add_course_feedback(user_id)
+                elif user_input == 10:
+                    self.input_course_name_to_study_from(user_id)
                 else:
                     print("You entered wrong choice, please try again.. ")
                 print(mentor_menu)
@@ -258,10 +264,22 @@ class EntryMenu:
             return
         course_name = get_string_input("Enter the name of course you wish to add feedback of : ")
         is_valid_course_name, course_id = self.check_valid_course(course_name, content)
+        print("Inside add course feedback")
+        #
+        # print(course_id)
+        print(get_query.get("CHECK_IF_FEEDBACK_PRESENT"))
+        content = DatabaseConnection.get_from_db(get_query.get("CHECK_IF_FEEDBACK_PRESENT"),(course_id,user_id))
+
+        # print(content)
+        # if content is None:
+        #     print("You've already added feedback for this course")
+        #     return
         if is_valid_course_name:
             self.input_course_feedback(course_id, user_id)
 
     def input_course_feedback(self, course_id, user_id):
+        # content = DatabaseConnection.get_from_db(get_query.get("CHECK_IS_FEEDBACK_ALREADY_ADDED"), (course_id, user_id))
+
         print("**** Add feedback ****")
         rating = float(input("Enter rating out of 5 : "))
         while rating > 5 or rating <= 0:
@@ -282,14 +300,15 @@ class EntryMenu:
         if is_valid_course_name:
             faq.view_faq(course_name)
 
-    # def add_course_feedback(self, user_id):
-    #     content = course.view_purchased_course(user_id)
-    #     if content is None:
-    #         return
-    #     course_name = get_string_input("Enter the name of course you wish to add feedback to : ")
-    #     is_valid_course_name, course_id = self.check_valid_course(course_name, content)
-    #     if is_valid_course_name:
-    #         feedback.add_course_feedback(user_id)
+    def input_course_name_to_study_from(self, user_id):
+        content = course.view_purchased_course(user_id)
+        if content is None:
+            return
+        course_name = get_string_input("Enter the name of course you wish to study from : ")
+        is_valid_course_name, course_id = self.check_valid_course(course_name, content)
+        if is_valid_course_name:
+            course_name = is_valid_course_name
+            course.view_course_content(course_name)
 
     def check_pending_courses(self):
         query = get_query["PENDING_STATUS"]

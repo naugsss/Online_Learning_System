@@ -27,7 +27,10 @@ mentor_menu = """
         5. View feedback. 
         6. Add FAQ. 
         7. View FAQ.
-        8. exit. 
+        8. Purchase course
+        9. Add feedback
+        10. My learning
+        11. exit. 
 """
 
 visitor_menu = """

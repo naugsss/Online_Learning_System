@@ -30,5 +30,6 @@
   "GET_USER_DETAILS": "SELECT * FROM student_course",
   "GET_COURSE_NAME": "SELECT name FROM courses WHERE id = %s",
   "GET_PENDING_COURSE_COUNT": "SELECT COUNT(approval_status) FROM courses WHERE approval_status = %s and status = %s",
-  "GET_MENTOR_COURSE": "SELECT * FROM mentor_course, courses WHERE uid = %s AND mentor_course.cid = courses.id"
+  "GET_MENTOR_COURSE": "SELECT * FROM mentor_course, courses WHERE uid = %s AND mentor_course.cid = courses.id",
+  "CHECK_IF_FEEDBACK_PRESENT": "SELECT * FROM course_feedback WHERE cid = %s AND uid = %s"
 }

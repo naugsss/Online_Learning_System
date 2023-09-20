@@ -1,7 +1,6 @@
 from datetime import date
 from tabulate import tabulate
 from src.controllers.courses import Courses
-from src.helpers.inputs_and_validations import get_string_input, get_float_input
 from src.models.database import DatabaseConnection
 from src.models.fetch_json_data import JsonData
 

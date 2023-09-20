@@ -64,19 +64,13 @@ class Courses:
         content = list_course_in_tabular_form(query, headers, "grid", included_columns, user_id)
         return content
 
-    def view_course_content(self, user_id):
-        content = self.view_purchased_course(user_id)
-        is_valid_course = False
-        user_input = input_study_course_name()
-        for row in content:
-            if row[1].lower() == user_input.lower():
-                is_valid_course = True
-                result = DatabaseConnection.get_from_db(get_query.get("GET_DETAILS_COURSES"), (row[1],))
-                print("**** Content Begins **** ")
-                print(result[0][2])
-                print("**** END **** ")
-        if not is_valid_course:
-            print("No such course exists")
+    def view_course_content(self, course_name):
+
+        result = DatabaseConnection.get_from_db(get_query.get("GET_DETAILS_COURSES"), (course_name,))
+        print("**** Content Begins **** ")
+        print(result[0][2])
+        print("**** END **** ")
+
 
     def purchase_course(self, user_id, course_id):
 
