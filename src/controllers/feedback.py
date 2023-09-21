@@ -18,8 +18,9 @@ class Feedback:
             headers = ["Rating", "Comment"]
             table_str = tabulate(table, headers=headers, tablefmt="grid")
             print(table_str)
+            return result
         else:
-            print("No feedback exists for this course.")
+            return None
 
     def add_course_feedback(self, course_id, rating, comments, user_id):
 

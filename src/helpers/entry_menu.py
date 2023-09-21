@@ -231,8 +231,9 @@ class EntryMenu:
             return
         purchase_course_name = self.input_purchase_course_name()
         is_valid_course_name, course_id = self.check_valid_course(purchase_course_name, content)
-        if is_valid_course_name:
-            course.purchase_course(user_id, course_id)
+        return course_id
+        # if is_valid_course_name:
+        #     course.purchase_course(user_id, course_id)
 
     def check_valid_course(self, course_name, content):
         is_valid_course = False

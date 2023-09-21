@@ -69,13 +69,7 @@ class DatabaseConnection:
             print("Please check you inputs and try once again.")
 
     def get_from_db(self, query, val=None):
-        print("Inside get from db")
-        print(query)
-        print(val)
         try:
-            print("Inside try")
-            print(query)
-            print(val)
             with DatabaseConnection() as db:
                 cursor = db.cursor()
                 if val is None:

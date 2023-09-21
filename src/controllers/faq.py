@@ -20,13 +20,14 @@ class Faq:
 
         result = DatabaseConnection.get_from_db(get_query.get("GET_FAQ"), (course_name,))
         if result is None or len(result) == 0:
-            print("No FAQ exists for this course.")
+            return None
         else:
             table = [(question, answer) for (_, _, _, _, _, _, _, _, _, _, _, _, _, question, answer, *_) in
                      result]
             headers = ["Question", "Answer"]
             table_str = tabulate(table, headers=headers, tablefmt="grid")
             print(table_str)
+            return result
 
     def add_faq(self, content, course_name):
         is_valid_input = False

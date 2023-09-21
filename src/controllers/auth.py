@@ -28,9 +28,11 @@ class Login:
         self.email = None
         self.password = None
 
-    def login_user(self):
-        input_user_name(self)
-        self.password = maskpass.askpass(prompt="Enter your password : ", mask="*")
+    def login_user(self, username, password):
+        # input_user_name(self)
+        # self.password = maskpass.askpass(prompt="Enter your password : ", mask="*")
+        self.username = username
+        self.password = password
         user_data = self.validate_user(self.username, self.password)
         if user_data != None:
             self.role = user_data[0]

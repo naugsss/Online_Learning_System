@@ -1,3 +1,7 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 from src.controllers.courses import Courses
 from src.controllers.auth import Login
 from src.helpers.entry_menu import EntryMenu

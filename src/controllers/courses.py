@@ -17,7 +17,7 @@ class Courses:
         self.price = None
 
     def add_course(self, user_id, course_name, content, duration, price):
-
+        # print("Inside add course fucntion")
         result = DatabaseConnection.get_course_id(get_query.get("GET_DETAILS_COURSES"), (self.course_name,))
         if result != 0:
             print("Another course with the same name already exists. Please try again.")
@@ -28,16 +28,20 @@ class Courses:
         course_id = DatabaseConnection.get_course_id(get_query.get("INSERT_COURSES"), val)
         DatabaseConnection.insert_into_db("INSERT INTO mentor_course (cid, uid) VALUES (%s, %s)", (course_id, user_id))
         print("**** Course approval request sent to admin. ****")
+        # return [course_name, content, duration, price]
 
     def list_course(self, role, user_id):
         if role == 1:
-            self.print_course_list_role_1()
+            return self.print_course_list_role_1()
+            # print("inside list course : ")
+            # print(content)
+            # return content
 
         elif role == 2 or role == 4:
             return self.print_course_list_role_2_or_4()
 
         elif role == 3:
-            self.print_course_list_role_3(user_id)
+            return self.print_course_list_role_3(user_id)
 
     def delete_course(self, course_name):
         DatabaseConnection.update_db(get_query.get("UPDATE_COURSE_STATUS"), ("deactive", course_name))
@@ -67,10 +71,10 @@ class Courses:
     def view_course_content(self, course_name):
 
         result = DatabaseConnection.get_from_db(get_query.get("GET_DETAILS_COURSES"), (course_name,))
-        print("**** Content Begins **** ")
-        print(result[0][2])
-        print("**** END **** ")
-
+        # print("**** Content Begins **** ")
+        # print(result[0][2])
+        # print("**** END **** ")
+        return result[0][2]
 
     def purchase_course(self, user_id, course_id):
 
@@ -85,19 +89,19 @@ class Courses:
                 updated_no_of_student = no_of_students[0][7] + 1
                 DatabaseConnection.update_db(get_query.get("UPDATE_NO_OF_STUDENTS"), (updated_no_of_student, course_id))
             else:
-                print("Error: Could not update the number of students.")
-                return
+                return "Could not update the number of students."
 
-            print("\n**** Course purchased successfully ****")
             Login.update_role(user_id)
+            return "**** Course purchased successfully ****"
         else:
-            print("\nYou've already purchased this course.")
+            return "You've already purchased this course."
 
     def print_course_list_role_1(self):
         query = get_query.get("GET_COURSES")
         headers = ["Name", "Duration (in hrs)", "Price (in Rs.)", "Rating", "Status"]
         included_columns = [1, 3, 4, 5, 8]
-        list_course_in_tabular_form(query, headers, "grid", included_columns, "approved")
+        content = list_course_in_tabular_form(query, headers, "grid", included_columns, "approved")
+        return content
 
     def print_course_list_role_2_or_4(self):
         print("Courses available : \n")
@@ -123,6 +127,7 @@ class Courses:
                                 "No. of students enrolled",
                                 "Earning"], tablefmt="grid"))
         print("Your total earning is : Rs. ", total_earning)
+        return values
 
 
 def list_course_in_tabular_form(query, headers, table_format="grid", columns=None, params=None):
