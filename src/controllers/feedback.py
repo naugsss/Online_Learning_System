@@ -31,5 +31,5 @@ class Feedback:
         ratings = round(ratings[0][0], 2)
 
         DatabaseConnection.update_db(get_query.get("UPDATE_AVG_RATING"), (ratings, course_id))
-        print("**** Feedback added successfully ****")
+        return "**** Feedback added successfully ****"
 

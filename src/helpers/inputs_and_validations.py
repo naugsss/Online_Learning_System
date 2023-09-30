@@ -1,10 +1,19 @@
 import re
-import maskpass
+import jsonschema
+from marshmallow import ValidationError
 
 
 class invalidNumberException(Exception):
     """Input can't be less than 0"""
     pass
+
+
+def validate_request_data(request_data, schema):
+    try:
+        jsonschema.validate(instance=request_data, schema=schema)
+        print("schema validated")
+    except ValidationError as error:
+        return str(error)
 
 
 def get_float_input(message):
@@ -50,10 +59,7 @@ def validate_password(password):
     if re.match(pattern, password):
         return True
     else:
-        print("This is not a valid password.")
-        user_password = maskpass.askpass(prompt="Enter your password : ", mask="*")
-        if validate_password(user_password):
-            return True
+        return "This is not a valid password."
 
 
 def validate_email(email):
@@ -61,9 +67,7 @@ def validate_email(email):
     if re.fullmatch(regex, email):
         return True
     else:
-        user_email = get_string_input("Please enter a valid email : ")
-        if validate_email(user_email):
-            return True
+        return "This is not a valid email."
 
 
 def input_email(self):

@@ -1,9 +1,6 @@
 import hashlib
 import re
-import maskpass
-
-from src.helpers.inputs_and_validations import validate_email, validate_password, \
-    input_name, input_email, input_user_name
+from src.helpers.inputs_and_validations import validate_email, validate_password
 from src.models.fetch_json_data import JsonData
 from src.models.database import DatabaseConnection
 
@@ -29,8 +26,6 @@ class Login:
         self.password = None
 
     def login_user(self, username, password):
-        # input_user_name(self)
-        # self.password = maskpass.askpass(prompt="Enter your password : ", mask="*")
         self.username = username
         self.password = password
         user_data = self.validate_user(self.username, self.password)
@@ -38,26 +33,31 @@ class Login:
             self.role = user_data[0]
             self.user_id = user_data[1]
             return [self.role, self.user_id]
+        return None
 
-    def sign_up(self):
-        input_name(self)
-        input_email(self)
+    def sign_up(self, name, email, username, password):
+        self.name = name
+        self.email = email
+        self.username = username
+        self.password = password
         if validate_email(self.email):
-            input_user_name(self)
             is_valid_username = DatabaseConnection.get_from_db(get_query.get("GET_FROM_AUTHENTICATION"), (self.username,))
             if is_valid_username:
-                print("This username already exists. Please try with different username.")
-                return
-            self.password = maskpass.askpass(prompt="Enter your password : ", mask="*")
+                return None
+
             if validate_password(self.password):
                 self.user_id = DatabaseConnection.insert_user_details(self.name, self.email, self.username,
                                                                       self.password)
                 if self.user_id:
-                    user_data = self.login_user()
+                    user_data = self.login_user(username, password)
                     if user_data is not None:
                         self.role = user_data[0]
                         self.user_id = user_data[1]
                         return [self.role, self.user_id]
+            else:
+                return {"message": "Invalid password"}
+        else:
+            return {"message": "Invalid email id"}
 
     def login_menu(self):
         print(LOGIN_VIEW)

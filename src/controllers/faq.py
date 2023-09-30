@@ -4,7 +4,6 @@ from src.helpers.inputs_and_validations import get_string_input
 from src.models.database import DatabaseConnection
 from src.models.fetch_json_data import JsonData
 
-#  this is another branch
 get_query = JsonData.load_data()
 
 DatabaseConnection = DatabaseConnection()

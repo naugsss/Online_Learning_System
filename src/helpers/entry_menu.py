@@ -23,27 +23,11 @@ earning = Earning()
 
 
 class EntryMenu:
-    # def __init__(self, role, user_id):
-    #     self.role = role
-    #     self.user_id = user_id
-    #
-    #     if role == 1:
-    #         self.prompt_admin_menu(role, user_id)
-    #     elif role == 2:
-    #         # student
-    #         self.prompt_student_menu(role, user_id)
-    #     elif role == 3:
-    #         # mentor
-    #         self.prompt_mentor_menu(role, user_id)
-    #     elif role == 4:
-    #         # visitor
-    #         self.prompt_visitor_menu(role, user_id)
 
     def prompt_admin_menu(self, role, user_id):
         pending_course_count = self.check_pending_courses()
-        print(pending_course_count)
         if pending_course_count > 0:
-            self.list_pending_course(pending_course_count)
+            self.list_pending_course()
         print(admin_menu)
         try:
             user_input = self.input_choice()
@@ -232,8 +216,6 @@ class EntryMenu:
         purchase_course_name = self.input_purchase_course_name()
         is_valid_course_name, course_id = self.check_valid_course(purchase_course_name, content)
         return course_id
-        # if is_valid_course_name:
-        #     course.purchase_course(user_id, course_id)
 
     def check_valid_course(self, course_name, content):
         is_valid_course = False
@@ -245,8 +227,7 @@ class EntryMenu:
                 course_id = row[0]
 
         if not is_valid_course:
-            print("No such course exists")
-            return False
+            return [None, None]
         else:
             return [course_name, course_id]
 
@@ -266,20 +247,13 @@ class EntryMenu:
         course_name = get_string_input("Enter the name of course you wish to add feedback of : ")
         is_valid_course_name, course_id = self.check_valid_course(course_name, content)
         print("Inside add course feedback")
-        #
-        # print(course_id)
-        print(get_query.get("CHECK_IF_FEEDBACK_PRESENT"))
-        content = DatabaseConnection.get_from_db(get_query.get("CHECK_IF_FEEDBACK_PRESENT"),(course_id,user_id))
 
-        # print(content)
-        # if content is None:
-        #     print("You've already added feedback for this course")
-        #     return
+        print(get_query.get("CHECK_IF_FEEDBACK_PRESENT"))
+
         if is_valid_course_name:
             self.input_course_feedback(course_id, user_id)
 
     def input_course_feedback(self, course_id, user_id):
-        # content = DatabaseConnection.get_from_db(get_query.get("CHECK_IS_FEEDBACK_ALREADY_ADDED"), (course_id, user_id))
 
         print("**** Add feedback ****")
         rating = float(input("Enter rating out of 5 : "))
@@ -320,18 +294,18 @@ class EntryMenu:
 
         return pending_course_count
 
-    def list_pending_course(self, pending_course_count):
+    def list_pending_course(self):
         print("**************************")
         print("Pending Notification : ")
         query = get_query.get("PENDING_STATUS")
         result = DatabaseConnection.get_from_db(query, ("pending",))
-
+        if not result:
+            return
         print("Course details : \n")
-        course_name = result[0][1]
         headers = ["Name", "Duration (in months)", "Price"]
         included_columns = [1, 3, 4]
-        list_course_in_tabular_form(query, headers, "grid", included_columns, ("pending",))
-        course.approve_course(course_name, pending_course_count)
+        content = list_course_in_tabular_form(query, headers, "grid", included_columns, ("pending",))
+        return content
 
     def input_course_faq(self, user_id):
         content = DatabaseConnection.get_from_db(get_query.get("GET_FAQ_DETAILS"), (user_id,))

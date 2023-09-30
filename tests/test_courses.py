@@ -2,8 +2,6 @@ import sys
 import os
 from io import StringIO
 from unittest.mock import patch
-
-from src.controllers.auth import Login
 from src.controllers.courses import Courses, input_study_course_name, list_course_in_tabular_form
 from src.models.database import DatabaseConnection
 import unittest

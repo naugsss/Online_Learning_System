@@ -1,36 +1,92 @@
-from marshmallow import Schema, fields
+register_schema = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "email": {"type": "string"},
+        "username": {"type": "string"},
+        "password": {"type": "string"}
+    },
+    "required": ["username", "password"]
+}
 
+user_schema = {
+    "type": "object",
+    "properties": {
+        "username": {"type": "string"},
+        "password": {"type": "string"}
+    },
+    "required": ["username", "password"]
+}
 
-class UserSchema(Schema):
-    username = fields.Str(required=True)
-    password = fields.Str(required=True, load_only=True)
+course_schema = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "content": {"type": "string"},
+        "duration": {"type": "integer"},
+        "price": {"type": "integer"}
 
+    },
+    "required": ["name", "content", "duration", "price"]
+}
 
-class CourseSchema(Schema):
-    name = fields.Str(required=True)
-    duration = fields.Int(required=True)
-    content = fields.Str(required=True)
-    price = fields.Int(required=True)
+validate_course_schema = {
+    "type": "object",
+    "properties": {
+        "course_name": {"type": "string"},
+        "approval_status": {"type": "string"}
+    },
+    "required": ["course_name", "approval_status"]
+}
 
+purchase_course_schema = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"}
+    },
+    "required": ["name"]
+}
 
-class PurchaseCourseSchema(Schema):
-    name = fields.Str(required=True)
+feedback_schema = {
+    "type": "object",
+    "properties": {
+        "ratings": {"type": "number"},
+        "comments": {"type": "string"}
+    },
 
+}
 
-class FeedbackSchema(Schema):
-    ratings = fields.Float(required=True)
-    comments = fields.Str()
+faq_schema = {
+    "type": "object",
+    "properties": {
+        "questions": {"type": "string"},
+        "answers": {"type": "string"}
+    },
+    "required": ["questions", "answers"]
+}
 
+mentor_schema = {
+    "type": "object",
+    "properties": {
+        "username": {"type": "string"}
+    },
+    "required": ["username"]
+}
 
-class FaqSchema(Schema):
-    questions = fields.Str(required=True)
-    answers = fields.Str(required=True)
+earning_schema = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "earning": {"type": "integer"},
+    },
+    "required": ["ratings"]
+}
 
-
-class MentorSchema(Schema):
-    username = fields.Str(required=True)
-
-class EarningSchema(Schema):
-    name = fields.Str(required=True)
-    course_name = fields.Str()
-    earning = fields.Integer(required=True)
+approval_schema = {
+    "type": "object",
+    "properties": {
+        "course_name": {"type": "string"},
+        "approval_status": {"type": "integer"},
+    },
+    "required": ["course_name", "approval_status"]
+}

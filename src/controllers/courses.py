@@ -17,25 +17,20 @@ class Courses:
         self.price = None
 
     def add_course(self, user_id, course_name, content, duration, price):
-        # print("Inside add course fucntion")
-        result = DatabaseConnection.get_course_id(get_query.get("GET_DETAILS_COURSES"), (self.course_name,))
+        result = DatabaseConnection.get_course_id(get_query.get("GET_DETAILS_COURSES"), (course_name,))
         if result != 0:
-            print("Another course with the same name already exists. Please try again.")
-            return
+            return "Another course with the same name already exists. Please try again."
+
         val = (
             course_name, content, duration, price, 0, "pending", 0, "active", date.today(),
             date.today())
         course_id = DatabaseConnection.get_course_id(get_query.get("INSERT_COURSES"), val)
         DatabaseConnection.insert_into_db("INSERT INTO mentor_course (cid, uid) VALUES (%s, %s)", (course_id, user_id))
-        print("**** Course approval request sent to admin. ****")
-        # return [course_name, content, duration, price]
+        return "**** Course approval request sent to admin. ****"
 
     def list_course(self, role, user_id):
         if role == 1:
             return self.print_course_list_role_1()
-            # print("inside list course : ")
-            # print(content)
-            # return content
 
         elif role == 2 or role == 4:
             return self.print_course_list_role_2_or_4()
@@ -47,18 +42,15 @@ class Courses:
         DatabaseConnection.update_db(get_query.get("UPDATE_COURSE_STATUS"), ("deactive", course_name))
         print("**** Course marked as deactivated successfully ****")
 
-    def approve_course(self, course_name, pending_course_count):
-        result = DatabaseConnection.get_from_db(get_query.get("GET_COURSES_STATUS"), ("pending", "active"))
-        for row in result:
-            approve_reject_input = get_approve_reject_input(course_name)
-            if approve_reject_input == "approve":
-                DatabaseConnection.update_db(get_query.get("UPDATE_PENDING_APPROVAL_STATUS"), ("approved", row[0]))
-                print("**** Course approved successfully ****")
-            else:
-                DatabaseConnection.delete_from_db(get_query.get("DELETE_FROM_MENTOR_COURSE"), (row[0],))
-                DatabaseConnection.delete_from_db(get_query.get("DELETE_FROM_COURSES"), (row[0],))
-                print("**** Course rejected ****")
-            pending_course_count -= 1
+    def approve_course(self, course_id, approval_status):
+
+        if approval_status == "approve":
+            DatabaseConnection.update_db(get_query.get("UPDATE_PENDING_APPROVAL_STATUS"), ("approved", course_id))
+            return "**** Course approved successfully ****"
+        else:
+            DatabaseConnection.delete_from_db(get_query.get("DELETE_FROM_MENTOR_COURSE"), (course_id,))
+            DatabaseConnection.delete_from_db(get_query.get("DELETE_FROM_COURSES"), (course_id,))
+            return "**** Course rejected ****"
 
     def view_purchased_course(self, user_id):
         print("Courses you've purchased : \n")
@@ -71,9 +63,6 @@ class Courses:
     def view_course_content(self, course_name):
 
         result = DatabaseConnection.get_from_db(get_query.get("GET_DETAILS_COURSES"), (course_name,))
-        # print("**** Content Begins **** ")
-        # print(result[0][2])
-        # print("**** END **** ")
         return result[0][2]
 
     def purchase_course(self, user_id, course_id):
@@ -98,9 +87,9 @@ class Courses:
 
     def print_course_list_role_1(self):
         query = get_query.get("GET_COURSES")
-        headers = ["Name", "Duration (in hrs)", "Price (in Rs.)", "Rating", "Status"]
-        included_columns = [1, 3, 4, 5, 8]
-        content = list_course_in_tabular_form(query, headers, "grid", included_columns, "approved")
+        headers = ["Name", "Duration (in hrs)", "Price (in Rs.)", "Rating", "approval_status", "Status"]
+        included_columns = [1, 3, 4, 5, 6, 8]
+        content = list_course_in_tabular_form(query, headers, "grid", included_columns)
         return content
 
     def print_course_list_role_2_or_4(self):
