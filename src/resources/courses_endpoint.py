@@ -1,14 +1,18 @@
-from flask import request
+from flask import request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint, abort
 from flask.views import MethodView
-from src.controllers.courses import Courses
+from src.controllers.courses import Courses, list_course_in_tabular_form
 from src.controllers.faq import Faq
 from src.controllers.feedback import Feedback
-from src.helpers.entry_menu import EntryMenu
-from src.helpers.inputs_and_validations import validate_request_data
+from src.helpers.inputs_and_validations import validate_request_data, check_valid_course
 from src.schemas import feedback_schema, course_schema, validate_course_schema
+from src.models.database import DatabaseConnection
+from src.models.fetch_json_data import JsonData
 
+DatabaseConnection = DatabaseConnection()
+
+get_query = JsonData.load_data()
 blp = Blueprint("Courses", "Courses", description="operations on courses")
 
 
@@ -39,19 +43,35 @@ class Course(MethodView):
         user_data = request.get_json()
         user_role = jwt.get("role")
         if user_role != 3:
-            abort(403, message="You are not allowed to access this")
+            return my_custom_error(403, "You are not allowed to do this")
+
         validation_response = validate_request_data(user_data, course_schema)
         if validation_response:
             return validation_response, 400
 
         try:
-            response = course.add_course(user_id=user_id, course_name=user_data["name"],
-                                           content=user_data["content"], duration=user_data["duration"],
-                                           price=user_data["price"])
+            response = course.add_course(
+                user_id=user_id,
+                course_name=user_data["name"],
+                content=user_data["content"],
+                duration=user_data["duration"],
+                price=user_data["price"],
+            )
             return {"message": response}
 
         except LookupError as error:
-            abort(409, message=str(error))
+            return (
+                jsonify(
+                    {
+                        "error": {
+                            "code": 409,
+                            "message": str(error),
+                        },
+                        "status": "failure",
+                    }
+                ),
+                409,
+            )
         except ValueError as error:
             abort(400, message=str(error))
         except:
@@ -91,9 +111,8 @@ class Course(MethodView):
             return validation_response, 400
 
         try:
-            entrymenu = EntryMenu()
             content = course.list_course(1, user_id)
-            name, course_id = entrymenu.check_valid_course(course_data["course_name"], content)
+            name, course_id = check_valid_course(course_data["course_name"], content)
 
             if not name or not course_id:
                 abort(404, message="No such course exists")
@@ -124,7 +143,7 @@ def list_course_role_1(content):
             "price": price,
             "rating": rating,
             "status": status,
-            "approval status": approval_status
+            "approval status": approval_status,
         }
 
         response.append(return_dict)
@@ -147,7 +166,7 @@ def list_course_role_3(content):
             "price": price,
             "rating": rating,
             "no_of_students": no_of_students,
-            "earning (in Rs.)": earning
+            "earning (in Rs.)": earning,
         }
         response.append(return_dict)
     return response
@@ -181,12 +200,23 @@ class AccessCourse(MethodView):
         course = Courses()
         jwt = get_jwt()
         user_id = jwt.get("user_id")
-        entrymenu = EntryMenu()
+
         try:
             content = course.list_course(4, user_id)
-            name, course_id = entrymenu.check_valid_course(course_name, content)
+            name, course_id = check_valid_course(course_name, content)
             if not name or not course_id:
-                abort(404, message="No such course exists")
+                return (
+                    jsonify(
+                        {
+                            "error": {
+                                "code": 404,
+                                "message": "No such course exists",
+                            },
+                            "status": "failure",
+                        }
+                    ),
+                    401,
+                )
 
             message = course.purchase_course(user_id, course_id)
             return {"message": message}
@@ -196,7 +226,6 @@ class AccessCourse(MethodView):
             abort(400, message=str(error))
         except:
             abort(500, message="An Error Occurred Internally in the Server")
-
 
     @jwt_required()
     def get(self, course_name):
@@ -217,12 +246,13 @@ class AccessCourse(MethodView):
                     abort(400, message=str(error))
                 except:
                     abort(500, message="An Error Occurred Internally in the Server")
-        abort(403, message="You haven't purchased the course or course name is incorrect")
+        abort(
+            403, message="You haven't purchased the course or course name is incorrect"
+        )
 
 
 @blp.route("/courses/<string:course_name>/user_feedback")
 class accessFeedback(MethodView):
-
     @jwt_required()
     def post(self, course_name):
         """function to add feedback to courses"""
@@ -231,7 +261,6 @@ class accessFeedback(MethodView):
         jwt = get_jwt()
         user_id = jwt.get("user_id")
         content = course.list_course(4, user_id)
-        entrymenu = EntryMenu()
         user_feedback = request.get_json()
         validation_response = validate_request_data(user_feedback, feedback_schema)
         if validation_response:
@@ -244,11 +273,13 @@ class accessFeedback(MethodView):
                     comments = user_feedback.get("comments")
                     if not comments:
                         comments = "No comments"
-                    name, course_id = entrymenu.check_valid_course(course_name, content)
+                    name, course_id = check_valid_course(course_name, content)
                     if not name or not course_id:
                         abort(404, message="No such course exists")
 
-                    message = feedback.add_course_feedback(course_id, ratings, comments, user_id)
+                    message = feedback.add_course_feedback(
+                        course_id, ratings, comments, user_id
+                    )
                     return {"message": message}
                 except LookupError as error:
                     abort(409, message=str(error))
@@ -266,9 +297,8 @@ class accessFeedback(MethodView):
         course = Courses()
         try:
             content = course.list_course(4, user_id)
-            entrymenu = EntryMenu()
             feedback = Feedback()
-            name, course_id = entrymenu.check_valid_course(course_name, content)
+            name, course_id = check_valid_course(course_name, content)
             if not name or not course_id:
                 abort(404, message="No such course exists")
             feedback = feedback.view_course_feedback(course_id)
@@ -279,10 +309,7 @@ class accessFeedback(MethodView):
                 rating = val[3]
                 comment = val[4]
 
-                return_dict = {
-                    "rating": rating,
-                    "comment": comment
-                }
+                return_dict = {"rating": rating, "comment": comment}
                 response.append(return_dict)
 
             return response
@@ -298,6 +325,7 @@ class accessFeedback(MethodView):
 @blp.route("/pending_courses")
 class PendingRequests(MethodView):
     """function to check for any pending course for approval"""
+
     @jwt_required()
     def get(self):
         jwt = get_jwt()
@@ -306,8 +334,7 @@ class PendingRequests(MethodView):
         if role != 1:
             abort(403, message="You are not allowed to view this.")
         try:
-            menu = EntryMenu()
-            content = menu.list_pending_course()
+            content = list_pending_course()
             if content is None:
                 return {"message": "No pending course"}
             return list_course_role_1(content)
@@ -321,7 +348,6 @@ class PendingRequests(MethodView):
 
 @blp.route("/courses/<string:course_name>/user_faq")
 class accessFaq(MethodView):
-
     @jwt_required()
     def get(self, course_name):
         """function to view FAQ of courses"""
@@ -329,9 +355,8 @@ class accessFaq(MethodView):
         user_id = jwt.get("user_id")
         course = Courses()
         content = course.list_course(4, user_id)
-        entrymenu = EntryMenu()
         faq = Faq()
-        name, course_id = entrymenu.check_valid_course(course_name, content)
+        name, course_id = check_valid_course(course_name, content)
 
         if not name or not course_id:
             abort(404, message="No such course exists")
@@ -345,10 +370,7 @@ class accessFaq(MethodView):
                 answer = val[14]
                 question = val[13]
 
-                return_dict = {
-                    "question": question,
-                    "answer": answer
-                }
+                return_dict = {"question": question, "answer": answer}
                 response.append(return_dict)
 
             return response
@@ -358,3 +380,34 @@ class accessFaq(MethodView):
             abort(400, message=str(error))
         except:
             abort(500, message="An Error Occurred Internally in the Server")
+
+
+def list_pending_course():
+    print("**************************")
+    print("Pending Notification : ")
+    query = get_query.get("PENDING_STATUS")
+    result = DatabaseConnection.get_from_db(query, ("pending",))
+    if not result:
+        return
+    print("Course details : \n")
+    headers = ["Name", "Duration (in months)", "Price"]
+    included_columns = [1, 3, 4]
+    content = list_course_in_tabular_form(
+        query, headers, "grid", included_columns, ("pending",)
+    )
+    return content
+
+
+def my_custom_error(status_code, message):
+    return (
+        jsonify(
+            {
+                "error": {
+                    "code": status_code,
+                    "message": message,
+                },
+                "status": "failure",
+            }
+        ),
+        status_code,
+    )

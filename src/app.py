@@ -30,7 +30,9 @@ def create_app():
         return (
             jsonify(
                 {
-                    "error": {"code": 400, "message": "The token has expired"}, "status": "failure"}
+                    "error": {"code": 400, "message": "The token has expired"},
+                    "status": "failure",
+                }
             ),
             401,
         )
@@ -40,7 +42,9 @@ def create_app():
         return (
             jsonify(
                 {
-                    "error": {"code": 400, "message": "Signature verification failed"}, "status": "failure"}
+                    "error": {"code": 400, "message": "Signature verification failed"},
+                    "status": "failure",
+                }
             ),
             401,
         )
@@ -50,7 +54,12 @@ def create_app():
         return (
             jsonify(
                 {
-                    "error": {"code": 400, "message": "request does not contain access token"}, "status": "failure"}
+                    "error": {
+                        "code": 400,
+                        "message": "request does not contain access token",
+                    },
+                    "status": "failure",
+                }
             ),
             401,
         )

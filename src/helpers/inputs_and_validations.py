@@ -70,13 +70,6 @@ def validate_email(email):
         return "This is not a valid email."
 
 
-def input_email(self):
-    self.email = input("Enter your email : ")
-    is_valid_email = validate_email(self.email)
-    if is_valid_email is None:
-        self.input_email()
-
-
 def input_user_name(self):
     self.username = input("Enter your username : ")
     is_valid_username = validate_username(self.username)
@@ -91,3 +84,19 @@ def input_name(self):
     if is_valid_name is None:
         print("Enter a valid name...")
         self.input_name()
+
+
+def check_valid_course(course_name, content):
+    is_valid_course = False
+    course_id = None
+    for row in content:
+        if row[1].lower() == course_name.lower():
+            is_valid_course = True
+            course_name = row[1]
+            course_id = row[0]
+
+    if not is_valid_course:
+        return [None, None]
+    else:
+        return [course_name, course_id]
+
