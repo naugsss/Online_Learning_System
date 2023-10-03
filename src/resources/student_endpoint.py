@@ -1,7 +1,8 @@
 from flask_jwt_extended import jwt_required, get_jwt
-from flask_smorest import Blueprint, abort
+from flask_smorest import Blueprint
 from flask.views import MethodView
 from src.controllers.courses import Courses
+from src.resources.courses_endpoint import my_custom_error
 
 blp = Blueprint("Student", "Student", description="operation on students")
 
@@ -19,11 +20,11 @@ class MyCourse(MethodView):
                 return {"message: ": "You haven't purchased any course"}
             return list_my_course(content)
         except LookupError as error:
-            abort(409, message=str(error))
+            return my_custom_error(409, str(error))
         except ValueError as error:
-            abort(400, message=str(error))
+            return my_custom_error(400, str(error))
         except:
-            abort(500, message="An Error Occurred Internally in the Server")
+            return my_custom_error(500, "An error occurred internally in the server")
 
 
 def list_my_course(content):

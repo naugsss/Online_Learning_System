@@ -1,12 +1,12 @@
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt
-from flask_smorest import Blueprint, abort
+from flask_smorest import Blueprint
 from flask.views import MethodView
 
 from src.controllers.courses import Courses
 from src.controllers.earning import Earning
 from src.controllers.mentor import Mentor
-from src.resources.courses_endpoint import list_course_role_3
+from src.resources.courses_endpoint import list_course_role_3, my_custom_error
 
 blp = Blueprint("Mentor", "Mentor", description="operation on Mentors")
 
@@ -22,7 +22,8 @@ class MentorCourses(MethodView):
         user_role = jwt.get("role")
         course = Courses()
         if user_role != 3:
-            abort(401, message="You are not authorized")
+            return my_custom_error(401, "You are not authorized.")
+
         try:
             content = course.list_course(user_role, user_id)
             if content is None:
@@ -30,11 +31,11 @@ class MentorCourses(MethodView):
             return list_course_role_3(content)
 
         except LookupError as error:
-            abort(409, message=str(error))
+            return my_custom_error(409, str(error))
         except ValueError as error:
-            abort(400, message=str(error))
+            return my_custom_error(400, str(error))
         except:
-            abort(500, message="An Error Occurred Internally in the Server")
+            return my_custom_error(500, "An error occurred internally in the server")
 
 
 @blp.route("/mentor")
@@ -47,7 +48,8 @@ class MentorTasks(MethodView):
         jwt = get_jwt()
         user_role = jwt.get("user_role")
         if user_role != 1:
-            return {"message : ": "You are not authorized"}, 401
+            return my_custom_error(401, "You are not authorized.")
+
         username = mentor_data["username"]
         mentor = Mentor()
         message = mentor.add_mentor(username)
@@ -66,7 +68,7 @@ class MentorTasks(MethodView):
         elif role == 3:
             return view_mentor_earning(user_id)
         else:
-            return {"message": "You are not authorized"}, 401
+            return my_custom_error(401, "You are not authorized.")
 
 
 def view_mentor_earning(user_id):
@@ -83,7 +85,7 @@ def view_mentor_earning(user_id):
         return_dict = {
             "name": mentor_name,
             "course_name": course_name,
-            "earning": earning
+            "earning": earning,
         }
         response.append(return_dict)
     return response
@@ -103,7 +105,7 @@ def view_every_mentor_earning():
         return_dict = {
             "name": mentor_name,
             "course_name": course_name,
-            "earning": earning
+            "earning": earning,
         }
         response.append(return_dict)
     return response

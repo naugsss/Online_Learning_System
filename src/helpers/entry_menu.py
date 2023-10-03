@@ -4,15 +4,15 @@
 # DatabaseConnection = DatabaseConnection()
 #
 # get_query = JsonData.load_data()
-
+#
 # student = Student()
 # mentor = Mentor()
 # feedback = Feedback()
 # course = Courses()
 # faq = Faq()
 # earning = Earning()
-
-
+#
+#
 # class EntryMenu:
 #     pass
 # def prompt_admin_menu(self, role, user_id):
@@ -123,7 +123,7 @@
 #     except:
 #         print("You entered a wrong choice, please try again ...")
 #         self.prompt_visitor_menu(role, user_id)
-
+#
 # def input_choice(self):
 #     user_input = int(input("Please enter your choice : "))
 #     if user_input <= 0:
@@ -134,7 +134,7 @@
 #     else:
 #         print("Please enter valid number...")
 #         return self.input_choice()
-
+#
 # def input_course_details(self, user_id):
 #     self.course_name = self.input_course_name()
 #     is_valid_course_name = DatabaseConnection.get_from_db(get_query.get("GET_DETAILS_COURSES"), (self.course_name,))
@@ -146,7 +146,7 @@
 #     self.price = self.input_course_price()
 #
 #     course.add_course(user_id, self.course_name, self.content, self.duration, self.price)
-
+#
 # def input_course_duration(self):
 #     user_input = int(input("Enter duration of course (in hours) : "))
 #     if user_input <= 0:
@@ -157,7 +157,7 @@
 #     else:
 #         print("Enter duration of course (in hours) : ")
 #         return self.input_course_duration()
-
+#
 # def input_course_price(self):
 #     user_input = int(input("Enter price of course (in Rs.) : "))
 #     if user_input <= 0:
@@ -168,7 +168,7 @@
 #     else:
 #         print("Please enter price of course (in Rs.) : ")
 #         return self.input_course_price()
-
+#
 # def input_course_name(self):
 #     user_input = input("Enter name of course : ")
 #     user_input = user_input.strip()
@@ -178,7 +178,7 @@
 #         user_input = self.input_course_name()
 #
 #     return user_input
-
+#
 # def input_course_content(self):
 #     try:
 #         user_input = input("Enter content of course : ")
@@ -189,7 +189,7 @@
 #     except:
 #         print("Wrong input made... please try again. ")
 #         return self.input_course_content()
-
+#
 # def input_delete_course_name(self, user_id):
 #     content = course.list_course(2, user_id)
 #     if content is None:
@@ -199,7 +199,7 @@
 #     if is_valid_course_name:
 #         course_to_delete = is_valid_course_name
 #         course.delete_course(course_to_delete)
-
+#
 # def list_purchasable_course(self, user_id):
 #     content = course.list_course(4, user_id)
 #     if content is None:
@@ -207,7 +207,7 @@
 #     purchase_course_name = self.input_purchase_course_name()
 #     is_valid_course_name, course_id = self.check_valid_course(purchase_course_name, content)
 #     return course_id
-
+#
 # def check_valid_course(self, course_name, content):
 #     is_valid_course = False
 #     course_id = None
@@ -221,7 +221,7 @@
 #         return [None, None]
 #     else:
 #         return [course_name, course_id]
-
+#
 # def view_course_feedback(self, user_id):
 #     content = course.list_course(2, user_id)
 #     if content is None:
@@ -230,7 +230,7 @@
 #     is_valid_course_name, course_id = self.check_valid_course(course_name, content)
 #     if is_valid_course_name:
 #         feedback.view_course_feedback(course_id)
-
+#
 # def add_course_feedback(self, user_id):
 #     content = course.view_purchased_course(user_id)
 #     if content is None:
@@ -243,7 +243,7 @@
 #
 #     if is_valid_course_name:
 #         self.input_course_feedback(course_id, user_id)
-
+#
 # def input_course_feedback(self, course_id, user_id):
 #
 #     print("**** Add feedback ****")
@@ -256,7 +256,7 @@
 #     if comments == "":
 #         comments = "No comments."
 #     feedback.add_course_feedback(course_id, rating, comments, user_id)
-
+#
 # def view_course_faq(self, user_id):
 #     content = course.list_course(4, user_id)
 #     if content is None:
@@ -265,7 +265,7 @@
 #     is_valid_course_name, course_id = self.check_valid_course(course_name, content)
 #     if is_valid_course_name:
 #         faq.view_faq(course_name)
-
+#
 # def input_course_name_to_study_from(self, user_id):
 #     content = course.view_purchased_course(user_id)
 #     if content is None:
@@ -275,7 +275,7 @@
 #     if is_valid_course_name:
 #         course_name = is_valid_course_name
 #         course.view_course_content(course_name)
-
+#
 # def check_pending_courses(self):
 #     query = get_query["PENDING_STATUS"]
 #     result = DatabaseConnection.get_from_db(query=query, val=("pending",))
@@ -284,7 +284,7 @@
 #         pending_course_count = result[0][0]
 #
 #     return pending_course_count
-
+#
 # def list_pending_course(self):
 #     print("**************************")
 #     print("Pending Notification : ")
@@ -297,7 +297,7 @@
 #     included_columns = [1, 3, 4]
 #     content = list_course_in_tabular_form(query, headers, "grid", included_columns, ("pending",))
 #     return content
-
+#
 # def input_course_faq(self, user_id):
 #     content = DatabaseConnection.get_from_db(get_query.get("GET_FAQ_DETAILS"), (user_id,))
 #

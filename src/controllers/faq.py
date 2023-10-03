@@ -11,40 +11,54 @@ course = Courses()
 
 
 class Faq:
-
     def __init__(self):
         pass
 
     def view_faq(self, course_name):
-
-        result = DatabaseConnection.get_from_db(get_query.get("GET_FAQ"), (course_name,))
+        result = DatabaseConnection.get_from_db(
+            get_query.get("GET_FAQ"), (course_name,)
+        )
         if result is None or len(result) == 0:
             return None
         else:
-            table = [(question, answer) for (_, _, _, _, _, _, _, _, _, _, _, _, _, question, answer, *_) in
-                     result]
+            table = [
+                (question, answer)
+                for (
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    question,
+                    answer,
+                    *_,
+                ) in result
+            ]
             headers = ["Question", "Answer"]
             table_str = tabulate(table, headers=headers, tablefmt="grid")
             print(table_str)
             return result
 
-    def add_faq(self, content, course_name):
+    def add_faq(self, content, question, answer, course_name):
         is_valid_input = False
         for row in content:
             if row[4].lower() == course_name.lower():
-                faq_count = input_faq_count()
                 is_valid_input = True
-                cnt = 0
-                while cnt < faq_count:
-                    question = get_string_input("Enter the question : ")
-                    answer = get_string_input("Enter it's answer : ")
-                    DatabaseConnection.insert_into_db(get_query.get("INSERT_FAQ"), (row[3], question, answer))
-                    cnt += 1
 
-                print("**** FAQ added successfully ****")
+                DatabaseConnection.insert_into_db(
+                    get_query.get("INSERT_FAQ"), (row[3], question, answer)
+                )
+                return "**** FAQ added successfully ****"
         if not is_valid_input:
-            print("No such course exists")
-            return
+            return "No such course exists"
 
 
 def input_faq_count():

@@ -1,19 +1,46 @@
 import re
+from flask import jsonify
 import jsonschema
-from marshmallow import ValidationError
 
 
 class invalidNumberException(Exception):
     """Input can't be less than 0"""
+
     pass
 
 
 def validate_request_data(request_data, schema):
     try:
         jsonschema.validate(instance=request_data, schema=schema)
-        print("schema validated")
-    except ValidationError as error:
-        return str(error)
+        for prop, prop_schema in schema["properties"].items():
+            if prop in request_data:
+                prop_value = request_data[prop]
+                if prop_schema["type"] == "integer" and not isinstance(prop_value, int):
+                    raise ValueError(f"The '{prop}' field must be an integer.")
+                elif prop_schema["type"] == "string" and not isinstance(
+                    prop_value, str
+                ):
+                    raise ValueError(f"The '{prop}' field must be a string.")
+                elif prop_schema["type"] == "number" and not isinstance(
+                    prop_value, float
+                ):
+                    raise ValueError(f"The '{prop}' field must be a Float value.")
+
+    except jsonschema.exceptions.ValidationError as e:
+        error_message = str(e)
+        first_line = error_message.split("\n")[0]
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": 400,
+                        "message": f"Incomplete details, {first_line} ",
+                    },
+                    "status": "failure",
+                }
+            ),
+            400,
+        )
 
 
 def get_float_input(message):
@@ -31,13 +58,13 @@ def get_float_input(message):
 
 
 def validate_username(username):
-    pattern = '[A-Za-z1-9_]+'
+    pattern = "[A-Za-z1-9_]+"
     matcher = re.fullmatch(pattern, username)
     return matcher
 
 
 def validate_name(name):
-    pattern = '[A-Za-z ]+'
+    pattern = "[A-Za-z ]+"
     matcher = re.fullmatch(pattern, name)
     return matcher
 
@@ -45,7 +72,7 @@ def validate_name(name):
 def get_string_input(message):
     try:
         user_input = input(message)
-        if user_input.strip() == '':
+        if user_input.strip() == "":
             print("Input cannot be empty. Please try again.")
             user_input = get_string_input(message)
         return user_input
@@ -63,7 +90,7 @@ def validate_password(password):
 
 
 def validate_email(email):
-    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
     if re.fullmatch(regex, email):
         return True
     else:
@@ -99,4 +126,3 @@ def check_valid_course(course_name, content):
         return [None, None]
     else:
         return [course_name, course_id]
-

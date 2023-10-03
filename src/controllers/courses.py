@@ -58,10 +58,11 @@ class Courses:
         query = get_query.get("GET_STUDENT_COURSES")
         included_columns = [1, 3, 4, 5]
         content = list_course_in_tabular_form(query, headers, "grid", included_columns, user_id)
+        
         return content
 
     def view_course_content(self, course_name):
-
+       
         result = DatabaseConnection.get_from_db(get_query.get("GET_DETAILS_COURSES"), (course_name,))
         return result[0][2]
 

@@ -59,10 +59,10 @@ feedback_schema = {
 faq_schema = {
     "type": "object",
     "properties": {
-        "questions": {"type": "string"},
-        "answers": {"type": "string"}
+        "question": {"type": "string"},
+        "answer": {"type": "string"}
     },
-    "required": ["questions", "answers"]
+    "required": ["question", "answer"]
 }
 
 mentor_schema = {

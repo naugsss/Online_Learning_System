@@ -87,7 +87,7 @@ class TestCourses(unittest.TestCase):
         captured_output = StringIO()
         sys.stdout = captured_output
         course = Courses()
-        course.view_course_content(user_id=1)
+        course.view_course_content()
         sys.stdout = sys.__stdout__
         printed_output = captured_output.getvalue().strip()
         expected_output = '**** Content Begins **** \nCourse content\n**** END ****'
