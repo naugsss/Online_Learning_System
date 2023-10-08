@@ -4,18 +4,15 @@ register_schema = {
         "name": {"type": "string"},
         "email": {"type": "string"},
         "username": {"type": "string"},
-        "password": {"type": "string"}
+        "password": {"type": "string"},
     },
-    "required": ["username", "password"]
+    "required": ["username", "password"],
 }
 
 user_schema = {
     "type": "object",
-    "properties": {
-        "username": {"type": "string"},
-        "password": {"type": "string"}
-    },
-    "required": ["username", "password"]
+    "properties": {"username": {"type": "string"}, "password": {"type": "string"}},
+    "required": ["username", "password"],
 }
 
 course_schema = {
@@ -24,53 +21,41 @@ course_schema = {
         "name": {"type": "string"},
         "content": {"type": "string"},
         "duration": {"type": "integer"},
-        "price": {"type": "integer"}
-
+        "price": {"type": "integer"},
     },
-    "required": ["name", "content", "duration", "price"]
+    "required": ["name", "content", "duration", "price"],
 }
 
 validate_course_schema = {
     "type": "object",
     "properties": {
         "course_name": {"type": "string"},
-        "approval_status": {"type": "string"}
+        "approval_status": {"type": "string"},
     },
-    "required": ["course_name", "approval_status"]
+    "required": ["course_name", "approval_status"],
 }
 
 purchase_course_schema = {
     "type": "object",
-    "properties": {
-        "name": {"type": "string"}
-    },
-    "required": ["name"]
+    "properties": {"name": {"type": "string"}},
+    "required": ["name"],
 }
 
 feedback_schema = {
     "type": "object",
-    "properties": {
-        "ratings": {"type": "number"},
-        "comments": {"type": "string"}
-    },
-
+    "properties": {"ratings": {"type": "number"}, "comments": {"type": "string"}},
 }
 
 faq_schema = {
     "type": "object",
-    "properties": {
-        "question": {"type": "string"},
-        "answer": {"type": "string"}
-    },
-    "required": ["question", "answer"]
+    "properties": {"question": {"type": "string"}, "answer": {"type": "string"}},
+    "required": ["question", "answer"],
 }
 
 mentor_schema = {
     "type": "object",
-    "properties": {
-        "username": {"type": "string"}
-    },
-    "required": ["username"]
+    "properties": {"username": {"type": "string"}},
+    "required": ["username"],
 }
 
 earning_schema = {
@@ -79,14 +64,20 @@ earning_schema = {
         "name": {"type": "string"},
         "earning": {"type": "integer"},
     },
-    "required": ["ratings"]
+    "required": ["ratings"],
 }
 
 approval_schema = {
     "type": "object",
     "properties": {
         "course_name": {"type": "string"},
-        "approval_status": {"type": "integer"},
+        "approval_status": {"type": "string"},
     },
-    "required": ["course_name", "approval_status"]
+    "required": ["course_name", "approval_status"],
+}
+
+validate_delete_course_schema = {
+    "type": "object",
+    "properties": {"name": {"type": "string"}},
+    "required": ["course_name"],
 }

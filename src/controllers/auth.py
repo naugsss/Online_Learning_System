@@ -1,8 +1,8 @@
 import hashlib
 import re
-from src.helpers.inputs_and_validations import validate_email, validate_password
-from src.models.fetch_json_data import JsonData
-from src.models.database import DatabaseConnection
+from helpers.inputs_and_validations import validate_email, validate_password
+from models.fetch_json_data import JsonData
+from models.database import DatabaseConnection
 
 get_query = JsonData.load_data()
 LOGIN_VIEW = """
@@ -41,13 +41,16 @@ class Login:
         self.username = username
         self.password = password
         if validate_email(self.email):
-            is_valid_username = DatabaseConnection.get_from_db(get_query.get("GET_FROM_AUTHENTICATION"), (self.username,))
+            is_valid_username = DatabaseConnection.get_from_db(
+                get_query.get("GET_FROM_AUTHENTICATION"), (self.username,)
+            )
             if is_valid_username:
                 return None
 
             if validate_password(self.password):
-                self.user_id = DatabaseConnection.insert_user_details(self.name, self.email, self.username,
-                                                                      self.password)
+                self.user_id = DatabaseConnection.insert_user_details(
+                    self.name, self.email, self.username, self.password
+                )
                 if self.user_id:
                     user_data = self.login_user(username, password)
                     if user_data is not None:
@@ -80,8 +83,10 @@ class Login:
         return [self.role, self.user_id]
 
     def validate_user(self, username, password):
-        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        response = DatabaseConnection.get_from_db(get_query.get("GET_FROM_AUTHENTICATION"), (username,))
+        hashed_password = hashlib.sha256(password.encode("utf-8")).hexdigest()
+        response = DatabaseConnection.get_from_db(
+            get_query.get("GET_FROM_AUTHENTICATION"), (username,)
+        )
 
         if response is None or len(response) == 0:
             print("No such user exists.")
@@ -93,34 +98,27 @@ class Login:
                 print("You entered wrong password. ")
 
     def get_role(self, user_id):
-        result = DatabaseConnection.get_from_db(get_query.get("GET_USER_ROLES"), (user_id,))
+        result = DatabaseConnection.get_from_db(
+            get_query.get("GET_USER_ROLES"), (user_id,)
+        )
         role_id = result[0][2]
         return [role_id, user_id]
 
     @staticmethod
     def update_role(user_id):
-        result = DatabaseConnection.get_from_db(get_query.get("GET_USER_ROLES"), (user_id,))
+        result = DatabaseConnection.get_from_db(
+            get_query.get("GET_USER_ROLES"), (user_id,)
+        )
         for row in result:
             if row[2] == 4:
-                DatabaseConnection.update_db(get_query.get("UPDATE_USER_ROLES"), (2, user_id))
+                DatabaseConnection.update_db(
+                    get_query.get("UPDATE_USER_ROLES"), (2, user_id)
+                )
                 return
-
-    # def input_user_name(self):
-    #     self.username = input("Enter your username : ")
-    #     is_valid_username = validate_username(self.username)
-    #     if is_valid_username is None:
-    #         print("Enter a valid username...")
-    #         self.input_user_name()
-
-    # def input_email(self):
-    #     self.email = input("Enter your email : ")
-    #     is_valid_email = validate_email(self.email)
-    #     if is_valid_email is None:
-    #         self.input_email()
 
 
 def input_choice():
-    pattern = '[1-9]+'
+    pattern = "[1-9]+"
     user_input = input("Please enter your choice : ")
     if re.fullmatch(pattern, user_input):
         return int(user_input)

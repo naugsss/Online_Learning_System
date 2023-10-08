@@ -1,19 +1,22 @@
+import os
+from dotenv import load_dotenv
 import hashlib
 from datetime import date
 import json
 import logging
 import mysql.connector
 
+load_dotenv()
 
 class DatabaseConnection:
 
     def __init__(self):
 
         self.db = mysql.connector.connect(
-            host="localhost",
-            user="naugs",
-            password="ashupatna123##",
-            database="lms",
+            host=os.getenv("HOST"),
+            user=os.getenv("USER"),
+            password=os.getenv("PASSWORD"),
+            database=os.getenv("DATABASE"),
             autocommit=True
         )
 
@@ -126,5 +129,4 @@ class DatabaseConnection:
         sql = "INSERT INTO authentication (username, password, uid, create_at) VALUES (%s, %s, %s, %s)"
         val = (username, hashed_password, user_id, date.today())
         self.insert_into_db(sql, val)
-        print("\n**** Account created successfully ****\n")
         return user_id

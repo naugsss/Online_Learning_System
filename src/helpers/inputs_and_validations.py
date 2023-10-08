@@ -1,6 +1,8 @@
 import re
-from flask import jsonify
+from fastapi.responses import JSONResponse
 import jsonschema
+from fastapi import status
+from helpers.custom_response import my_custom_error
 
 
 class invalidNumberException(Exception):
@@ -29,17 +31,9 @@ def validate_request_data(request_data, schema):
     except jsonschema.exceptions.ValidationError as e:
         error_message = str(e)
         first_line = error_message.split("\n")[0]
-        return (
-            jsonify(
-                {
-                    "error": {
-                        "code": 400,
-                        "message": f"Incomplete details, {first_line} ",
-                    },
-                    "status": "failure",
-                }
-            ),
-            400,
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content=my_custom_error(403, first_line),
         )
 
 

@@ -1,0 +1,7 @@
+jsonschema
+bcrypt
+regex
+mysql
+mysql-connector-python
+fastapi[all]
+uvicorn[standard]

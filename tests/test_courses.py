@@ -1,7 +1,8 @@
 import sys
 import os
+from datetime import date
 from io import StringIO
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from src.controllers.courses import Courses, input_study_course_name, list_course_in_tabular_form
 from src.models.database import DatabaseConnection
 import unittest
@@ -24,13 +25,13 @@ class TestCourses(unittest.TestCase):
         course = Courses()
 
         user_id = 1
-        course_name = "Python for Beginners"
+        course_name = "angular"
         content = "This course teaches you the basics of Python programming."
         duration = 10
         price = 100
-
+        expected_output = "Course approval request sent to admin."
         response = course.add_course(user_id, course_name, content, duration, price)
-        self.assertEqual(response, None)
+        self.assertEqual(response, expected_output)
 
     @patch("src.controllers.courses.DatabaseConnection.update_db")
     def test_delete_course(self, mock_update_db):
@@ -75,47 +76,54 @@ class TestCourses(unittest.TestCase):
         self.assertEqual(content, expected_content)
 
     @patch("src.controllers.courses.DatabaseConnection.get_from_db")
-    @patch("src.controllers.courses.Courses.view_purchased_course")
-    @patch("src.controllers.courses.input_study_course_name")
-    def test_view_course_content(self, mock_get_from_db, mock_input_study_course_name, mock_view_purchased_course):
-        mock_view_purchased_course.return_value = [
-            (1, 'Master dsa', 'dsa is awesome', 12, 1000, 4.5, 'approved', 2, 'active', '2023-09-09 00:00:00'),
-            (3, 'Java script', 'java script is amazing', 20, 2000, 5.0, 'approved', 2, 'active', '2023-09-10 00:00:00')
-        ]
-        mock_input_study_course_name.return_value = 'Master dsa'
+    def test_view_course_content(self, mock_get_from_db):
         mock_get_from_db.return_value = [(1, 'Master dsa', 'Course content')]
-        captured_output = StringIO()
-        sys.stdout = captured_output
         course = Courses()
-        course.view_course_content()
-        sys.stdout = sys.__stdout__
-        printed_output = captured_output.getvalue().strip()
-        expected_output = '**** Content Begins **** \nCourse content\n**** END ****'
-        self.assertEqual(printed_output, expected_output)
+        course_name = "Master dsa"
+        result = course.view_course_content(course_name)
+        self.assertEqual(result, 'Course content')
 
     @patch("src.controllers.courses.DatabaseConnection.insert_into_db")
     @patch("src.controllers.courses.DatabaseConnection.get_from_db")
     @patch("src.controllers.courses.DatabaseConnection.update_db")
     @patch("src.controllers.auth.Login.update_role")
     def test_purchase_course_success(self, mock_update_role, mock_update_db, mock_insert_into_db, mock_get_from_db):
+        # mock_get_from_db.return_value = []
+        # mock_get_from_db.side_effect = [
+        #     [(1, 'Course1', 'Description1', 10, 500, 4.0, 'approved', 1, 'active', '2023-09-09 00:00:00')],
+        #     [(1,)]]
+        # mock_insert_into_db.return_value = None
+        # mock_update_db.return_value = None
+        # mock_update_role.return_value = None
+        # course = Courses()
+        # course.purchase_course(user_id=1, course_id=1)
+        user_id = 1
+        course_id = 3
+
+        # Mock DatabaseConnection.get_from_db to return an empty result, indicating the course is not yet purchased
         mock_get_from_db.return_value = []
-        mock_get_from_db.side_effect = [
-            [(1, 'Course1', 'Description1', 10, 500, 4.0, 'approved', 1, 'active', '2023-09-09 00:00:00')],
-            [(1,)]]
-        mock_insert_into_db.return_value = None
-        mock_update_db.return_value = None
-        mock_update_role.return_value = None
+
+        # Mock DatabaseConnection.get_from_db to return a list with the updated number of students
+        mock_get_no_students = Mock(return_value=[(1, 3, 'Master dsa', 5, date.today(), 10)])
+        mock_get_from_db.side_effect = [mock_get_no_students, []]
+
+        # Create an instance of YourClass
         course = Courses()
-        course.purchase_course(user_id=1, course_id=1)
+
+        # Act
+        result = course.purchase_course(user_id, course_id)
+
+        # Assert
+        self.assertEqual(result, "Course purchased successfully")
+
+        # Verify that the expected database and function calls were made
+        mock_get_from_db.assert_called_with("PURCHASE_COURSE_UID_CID", (user_id, course_id))
+        mock_insert_into_db.assert_called_with("INSERT_STUDENT_COURSES", (user_id, course_id, date.today()))
+        mock_update_db.assert_called_with("UPDATE_NO_OF_STUDENTS", (11, course_id))
+        mock_update_role.assert_called_with(user_id)
 
     @patch("src.controllers.courses.DatabaseConnection.get_from_db")
     def test_purchase_course_already_purchased(self, mock_get_from_db):
-        mock_get_from_db.return_value = [(1,)]
-        course = Courses()
-        course.purchase_course(user_id=1, course_id=1)
-
-    @patch("src.controllers.courses.DatabaseConnection.get_from_db")
-    def test_purchase_course_course_already_purchased(self, mock_get_from_db):
         mock_get_from_db.return_value = [(1,)]
         course = Courses()
         course.purchase_course(user_id=1, course_id=1)

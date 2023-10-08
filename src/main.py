@@ -1,22 +1,16 @@
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from src.controllers.courses import Courses
-from src.controllers.auth import Login
-from src.helpers.entry_menu import EntryMenu
+sys.path.append(os.path.dirname(__file__))
+from fastapi import FastAPI
+from routes import courses, login_signup, mentors, students
 
-loginview = EntryMenu()
+# from src.routes.login_signup import login
 
-course = Courses()
-if __name__ == '__main__':
-    login = Login()
-    role, user_id = login.login_menu()
-    if role == 1:
-        EntryMenu.prompt_admin_menu(loginview, role, user_id)
-    elif role == 2:
-        EntryMenu.prompt_student_menu(loginview, role, user_id)
-    elif role == 3:
-        EntryMenu.prompt_mentor_menu(loginview, role, user_id)
-    elif role == 4:
-        EntryMenu.prompt_visitor_menu(loginview, role, user_id)
+app = FastAPI()
+
+# we are including the auth.py file as a route
+app.include_router(courses.router)
+app.include_router(login_signup.router)
+app.include_router(mentors.router)
+app.include_router(students.router)

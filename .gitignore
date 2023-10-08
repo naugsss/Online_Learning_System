@@ -1,0 +1,6 @@
+.env
+pipfile
+pipfile.lock
+.idea
+__pycache__
+.flaskenv

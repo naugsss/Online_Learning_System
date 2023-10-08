@@ -1,8 +1,8 @@
 from tabulate import tabulate
-from src.controllers.courses import Courses
-from src.helpers.inputs_and_validations import get_string_input
-from src.models.database import DatabaseConnection
-from src.models.fetch_json_data import JsonData
+from controllers.courses import Courses
+from helpers.inputs_and_validations import get_string_input
+from models.database import DatabaseConnection
+from models.fetch_json_data import JsonData
 
 get_query = JsonData.load_data()
 
@@ -56,7 +56,7 @@ class Faq:
                 DatabaseConnection.insert_into_db(
                     get_query.get("INSERT_FAQ"), (row[3], question, answer)
                 )
-                return "**** FAQ added successfully ****"
+                return "FAQ added successfully"
         if not is_valid_input:
             return "No such course exists"
 
