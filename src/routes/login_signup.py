@@ -1,10 +1,9 @@
 import os
 import sys
-from typing import Optional
-
-from fastapi.responses import JSONResponse
 
 sys.path.append(os.path.dirname(__file__))
+from typing import Optional
+from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Body, HTTPException, Response, status
 from datetime import timedelta, datetime
 from jose import jwt, JWTError

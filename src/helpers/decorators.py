@@ -1,7 +1,6 @@
 import functools
 from fastapi import status
 from fastapi.responses import JSONResponse
-
 from helpers.custom_response import my_custom_error
 from helpers.jwt_helpers import extract_token_data
 
@@ -39,4 +38,20 @@ def admin_only(function):
             )
         return await function(*args, **kwargs)
 
+    return wrapper
+
+
+def handle_errors(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        try:
+            return_value = function(*args, **kwargs)
+            return return_value
+
+        except LookupError as error:
+            return my_custom_error(409, str(error))
+        except ValueError as error:
+            return my_custom_error(400, str(error))
+        except:
+            return my_custom_error(500, "An error occurred internally in the server")
     return wrapper

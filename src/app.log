@@ -1,0 +1,3 @@
+09:53:12,101 routes.courses - DEBUG - not valid course schema --> <starlette.responses.JSONResponse object at 0x000001C796654B10>
+09:53:51,221 routes.courses - DEBUG - not valid course schema --> <starlette.responses.JSONResponse object at 0x00000241397DCC10>
+09:54:46,529 routes.courses - DEBUG - not valid course schema

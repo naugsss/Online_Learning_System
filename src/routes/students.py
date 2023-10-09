@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Request
-
 from helpers.jwt_helpers import extract_token_data
 from controllers.courses import Courses
 from helpers.custom_response import my_custom_error

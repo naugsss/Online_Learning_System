@@ -7,7 +7,7 @@ from helpers.inputs_and_validations import validate_request_data
 from schemas import mentor_schema
 from helpers.mentor_earnings import view_every_mentor_earning, view_mentor_earning
 from controllers.courses import Courses
-from routes.courses import list_course_role_3
+from helpers.list_courses import list_course_role_3
 
 router = APIRouter(prefix="", tags=["mentors"])
 
