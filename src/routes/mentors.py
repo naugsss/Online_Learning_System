@@ -1,7 +1,7 @@
 from controllers.mentor import Mentor
 from helpers.decorators import admin_only, mentor_only
 from helpers.jwt_helpers import extract_token_data
-from helpers.custom_response import my_custom_error
+from helpers.custom_response import get_error_response
 from fastapi import Body, Request, APIRouter
 from helpers.inputs_and_validations import validate_request_data
 from schemas import mentor_schema
@@ -35,7 +35,7 @@ async def mentor_earning(request: Request):
     elif role == 3:
         return view_mentor_earning(user_id)
     else:
-        return my_custom_error(401, "You are not authorized.")
+        return get_error_response(401, "You are not authorized.")
 
 
 @router.get("/my_courses")
@@ -52,8 +52,8 @@ async def my_courses(request: Request):
         return list_course_role_3(content)
 
     except LookupError as error:
-        return my_custom_error(409, str(error))
+        return get_error_response(409, str(error))
     except ValueError as error:
-        return my_custom_error(400, str(error))
+        return get_error_response(400, str(error))
     except:
-        return my_custom_error(500, "An error occurred internally in the server")
+        return get_error_response(500, "An error occurred internally in the server")

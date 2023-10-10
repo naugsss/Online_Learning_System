@@ -1,7 +1,4 @@
-from fastapi.responses import JSONResponse
-
-
-def my_custom_error(status_code, message):
+def get_error_response(status_code, message):
     return {
         "error": {
             "code": status_code,
@@ -11,5 +8,5 @@ def my_custom_error(status_code, message):
     }
 
 
-def my_custom_success(status_code, message):
+def get_success_response(status_code, message):
     return {"code": status_code, "message": message, "status": "successful"}

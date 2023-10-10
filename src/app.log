@@ -1,3 +1,15 @@
 09:53:12,101 routes.courses - DEBUG - not valid course schema --> <starlette.responses.JSONResponse object at 0x000001C796654B10>
 09:53:51,221 routes.courses - DEBUG - not valid course schema --> <starlette.responses.JSONResponse object at 0x00000241397DCC10>
 09:54:46,529 routes.courses - DEBUG - not valid course schema
+14:04:42,796 root - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '%s and status = %s' at line 1
+14:04:54,799 root - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '%s and status = %s' at line 1
+14:21:23,637 root - ERROR - Could not process parameters: int(1), it must be of type list, tuple or dict
+14:21:43,436 root - ERROR - Could not process parameters: int(2), it must be of type list, tuple or dict
+14:22:43,986 root - ERROR - Could not process parameters: int(2), it must be of type list, tuple or dict
+14:23:10,643 root - ERROR - Could not process parameters: int(3), it must be of type list, tuple or dict
+14:25:36,839 root - ERROR - Could not process parameters: int(3), it must be of type list, tuple or dict
+14:25:49,485 root - ERROR - Could not process parameters: int(3), it must be of type list, tuple or dict
+15:06:04,837 routes.courses - DEBUG - not valid course schema
+16:04:37,231 routes.courses - DEBUG - not valid delete course schema --> 403
+16:06:49,180 routes.courses - DEBUG - not valid delete course schema --> <starlette.responses.JSONResponse object at 0x0000028E77561750>
+16:07:17,7 routes.courses - DEBUG - not valid delete course schema --> <starlette.responses.JSONResponse object at 0x0000018769F06110>

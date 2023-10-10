@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Body, HTTPException, Response, status
 from datetime import timedelta, datetime
 from jose import jwt, JWTError
-from helpers.custom_response import my_custom_error, my_custom_success
+from helpers.custom_response import get_error_response, get_success_response
 from helpers.inputs_and_validations import validate_request_data, check_valid_course
 from schemas import user_schema, register_schema
 from controllers.auth import Login
@@ -39,17 +39,17 @@ def register_user(user_data=Body()):
             access_token = create_access_token(user_data, timedelta(minutes=60))
             return JSONResponse(
                 status_code=status.HTTP_200_OK,
-                content=my_custom_success(200, "Account created successfully"),
+                content=get_success_response(200, "Account created successfully"),
             )
         else:
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                content=my_custom_error(401, "This username already exists"),
+                content=get_error_response(401, "This username already exists"),
             )
     except:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content=my_custom_error(401, "There was an error authenticating"),
+            content=get_error_response(401, "There was an error authenticating"),
         )
 
 
@@ -67,17 +67,17 @@ def login_user(response: Response, user_credentials=Body()):
             user_data = {"role": is_authenticated[0], "user_id": is_authenticated[1]}
             access_token = create_access_token(user_data, timedelta(minutes=60))
             response.set_cookie(key="access_token", value=access_token, httponly=True)
-            return my_custom_success(200, "Login Successfully")
+            return get_success_response(200, "Login Successfully")
 
         else:
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                content=my_custom_error(401, "Invalid credentials"),
+                content=get_error_response(401, "Invalid credentials"),
             )
     except:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content=my_custom_error(401, "There was an error authenticating"),
+            content=get_error_response(401, "There was an error authenticating"),
         )
 
 

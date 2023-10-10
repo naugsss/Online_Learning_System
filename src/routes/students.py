@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from helpers.jwt_helpers import extract_token_data
 from controllers.courses import Courses
-from helpers.custom_response import my_custom_error
+from helpers.custom_response import get_error_response
 from helpers.list_courses import list_my_course
 
 
@@ -19,8 +19,8 @@ async def purchase_courses(request: Request):
             return {"message: ": "You haven't purchased any course"}
         return list_my_course(content)
     except LookupError as error:
-        return my_custom_error(409, str(error))
+        return get_error_response(409, str(error))
     except ValueError as error:
-        return my_custom_error(400, str(error))
+        return get_error_response(400, str(error))
     except:
-        return my_custom_error(500, "An error occurred internally in the server")
+        return get_error_response(500, "An error occurred internally in the server")

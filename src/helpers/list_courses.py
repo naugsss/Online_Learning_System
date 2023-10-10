@@ -1,4 +1,3 @@
-from controllers.courses import list_course_in_tabular_form
 from models.fetch_json_data import JsonData
 from models.database import DatabaseConnection
 
@@ -8,19 +7,9 @@ get_query = JsonData.load_data()
 
 
 def list_pending_course():
-    print("**************************")
-    print("Pending Notification : ")
     query = get_query.get("PENDING_STATUS")
     result = DatabaseConnection.get_from_db(query, ("pending",))
-    if not result:
-        return
-    print("Course details : \n")
-    headers = ["Name", "Duration (in months)", "Price"]
-    included_columns = [1, 3, 4]
-    content = list_course_in_tabular_form(
-        query, headers, "grid", included_columns, ("pending",)
-    )
-    return content
+    return result
 
 
 def list_my_course(content):

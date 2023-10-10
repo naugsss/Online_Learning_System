@@ -2,5 +2,5 @@
 pipfile
 pipfile.lock
 .idea
-__pycache__
 .flaskenv
+__pycache__

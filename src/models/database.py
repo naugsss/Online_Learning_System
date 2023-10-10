@@ -8,19 +8,21 @@ import mysql.connector
 
 load_dotenv()
 
+
 class DatabaseConnection:
-
     def __init__(self):
+        try:
+            self.db = mysql.connector.connect(
+                host=os.getenv("HOST"),
+                user=os.getenv("USER"),
+                password=os.getenv("PASSWORD"),
+                database=os.getenv("DATABASE"),
+                autocommit=True,
+            )
 
-        self.db = mysql.connector.connect(
-            host=os.getenv("HOST"),
-            user=os.getenv("USER"),
-            password=os.getenv("PASSWORD"),
-            database=os.getenv("DATABASE"),
-            autocommit=True
-        )
-
-        self.cursor = self.db.cursor()
+            self.cursor = self.db.cursor()
+        except Exception as e:
+            raise ValueError
 
     def __enter__(self):
         return self.db
@@ -28,7 +30,10 @@ class DatabaseConnection:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.db.close()
 
-    with open(r'C:\\coding\WG\watchguard_daily_task_Aaryan\\online learning\\Online_Learning_System\src\\utils\\query_data.json', 'r') as json_file:
+    with open(
+        r"C:\\coding\WG\watchguard_daily_task_Aaryan\\online learning\\Online_Learning_System\src\\utils\\query_data.json",
+        "r",
+    ) as json_file:
         data = json.load(json_file)
 
     def insert_into_db(self, query, val=None):
@@ -117,7 +122,6 @@ class DatabaseConnection:
             print("Please check you inputs and try once again.")
 
     def insert_user_details(self, name, email, username, password):
-
         sql = "INSERT INTO users (name, email) VALUES (%s, %s)"
         val = (name, email)
         user_id = self.get_role_from_db(sql, val)
@@ -125,8 +129,14 @@ class DatabaseConnection:
         val = (user_id, 4)
         self.insert_into_db(sql, val)
 
-        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        hashed_password = hashlib.sha256(password.encode("utf-8")).hexdigest()
         sql = "INSERT INTO authentication (username, password, uid, create_at) VALUES (%s, %s, %s, %s)"
         val = (username, hashed_password, user_id, date.today())
         self.insert_into_db(sql, val)
         return user_id
+
+
+try:
+    db = DatabaseConnection()
+except:
+    raise ValueError

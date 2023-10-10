@@ -2,13 +2,7 @@ import re
 from fastapi.responses import JSONResponse
 import jsonschema
 from fastapi import status
-from helpers.custom_response import my_custom_error
-
-
-class invalidNumberException(Exception):
-    """Input can't be less than 0"""
-
-    pass
+from helpers.custom_response import get_error_response
 
 
 def validate_request_data(request_data, schema):
@@ -33,46 +27,8 @@ def validate_request_data(request_data, schema):
         first_line = error_message.split("\n")[0]
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
-            content=my_custom_error(403, first_line),
+            content=get_error_response(403, first_line),
         )
-
-
-def get_float_input(message):
-    try:
-        user_input = float(input(message))
-        if user_input <= 0:
-            raise invalidNumberException
-        return user_input
-    except invalidNumberException:
-        print("input cannot be less than 0.. please try again. ")
-        get_float_input(message)
-    except:
-        print("Wrong input made.. please try again. ")
-        get_float_input(message)
-
-
-def validate_username(username):
-    pattern = "[A-Za-z1-9_]+"
-    matcher = re.fullmatch(pattern, username)
-    return matcher
-
-
-def validate_name(name):
-    pattern = "[A-Za-z ]+"
-    matcher = re.fullmatch(pattern, name)
-    return matcher
-
-
-def get_string_input(message):
-    try:
-        user_input = input(message)
-        if user_input.strip() == "":
-            print("Input cannot be empty. Please try again.")
-            user_input = get_string_input(message)
-        return user_input
-    except:
-        print("Wrong input made... please try again. ")
-        return get_string_input(message)
 
 
 def validate_password(password):
@@ -80,7 +36,7 @@ def validate_password(password):
     if re.match(pattern, password):
         return True
     else:
-        return "This is not a valid password."
+        return False
 
 
 def validate_email(email):
@@ -88,23 +44,7 @@ def validate_email(email):
     if re.fullmatch(regex, email):
         return True
     else:
-        return "This is not a valid email."
-
-
-def input_user_name(self):
-    self.username = input("Enter your username : ")
-    is_valid_username = validate_username(self.username)
-    if is_valid_username is None:
-        print("Enter a valid username...")
-        self.input_user_name()
-
-
-def input_name(self):
-    self.name = input("Enter your name : ")
-    is_valid_name = validate_name(self.name)
-    if is_valid_name is None:
-        print("Enter a valid name...")
-        self.input_name()
+        return False
 
 
 def check_valid_course(course_name, content):

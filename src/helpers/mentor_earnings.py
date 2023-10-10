@@ -20,7 +20,7 @@ def view_mentor_earning(user_id):
         response.append(return_dict)
     return response
 
-
+# view mentor earning
 def view_every_mentor_earning():
     earning = Earning()
     earning = earning.calculate_all_mentor_earning()
