@@ -1,5 +1,6 @@
 import os
 import sys
+import jsonschema
 
 sys.path.append(os.path.dirname(__file__))
 from typing import Optional
@@ -8,7 +9,7 @@ from fastapi import APIRouter, Body, HTTPException, Response, status
 from datetime import timedelta, datetime
 from jose import jwt, JWTError
 from helpers.custom_response import get_error_response, get_success_response
-from helpers.inputs_and_validations import validate_request_data, check_valid_course
+from helpers.validations import validate_request_data, check_if_valid_course_name
 from schemas import user_schema, register_schema
 from controllers.auth import Login
 from environs import Env
@@ -24,9 +25,14 @@ router = APIRouter()
 @router.post("/register")
 def register_user(user_data=Body()):
     login = Login()
-    validation_response = validate_request_data(user_data, register_schema)
-    if validation_response:
-        return validation_response, 400
+    try:
+        jsonschema.validate(user_data, register_schema)
+    except jsonschema.ValidationError as e:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=get_error_response(400, "Please enter valid credentials."),
+        )
+
     try:
         is_valid = login.sign_up(
             user_data["name"],

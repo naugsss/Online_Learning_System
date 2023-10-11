@@ -27,7 +27,7 @@ def mentor_only(function):
 
 def admin_only(function):
     @functools.wraps(function)
-    async def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):
         request = kwargs.get("request")
         access_token = extract_token_data(request)
         role = access_token.get("role")
@@ -39,7 +39,7 @@ def admin_only(function):
                     403, "You do not have the required permissions."
                 ),
             )
-        return await function(*args, **kwargs)
+        return function(*args, **kwargs)
 
     return wrapper
 

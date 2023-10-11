@@ -1,12 +1,12 @@
 import logging
-
+from helpers.setup_logger import log
 from fastapi import APIRouter, Body, Request, status, Path
 from fastapi.responses import JSONResponse
 from helpers.custom_response import get_error_response
 from helpers.jwt_helpers import extract_token_data
 from controllers.courses import Courses
-from helpers.inputs_and_validations import (
-    check_valid_course,
+from helpers.validations import (
+    check_if_valid_course_name,
     validate_request_data,
 )
 from schemas import (
@@ -16,11 +16,10 @@ from schemas import (
     feedback_schema,
     faq_schema,
 )
-from helpers.decorators import admin_only, handle_errors, mentor_only
+from helpers.handle_error_decorator import admin_only, handle_errors, mentor_only
 from helpers.list_courses import (
     list_course_role_1,
     list_course_role_2_or_role_4,
-    list_pending_course,
 )
 from controllers.feedback import Feedback
 from controllers.faq import Faq
@@ -30,18 +29,16 @@ from helpers.roles_enum import Roles
 
 
 logger = logging.getLogger(__name__)
-
 DatabaseConnection = DatabaseConnection()
 get_query = JsonData.load_data()
-
 router = APIRouter(prefix="", tags=["courses"])
-
 course = Courses()
 feedback = Feedback()
 
 
 @router.get("/courses")
 @handle_errors
+@log
 def get_courses(request: Request):
     jwt_token_data = extract_token_data(request)
     role = jwt_token_data.get("role")
@@ -60,6 +57,7 @@ def get_courses(request: Request):
 @router.post("/courses")
 @mentor_only
 @handle_errors
+@log
 def add_course(request: Request, body=Body()):
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
@@ -81,6 +79,7 @@ def add_course(request: Request, body=Body()):
 @router.put("/courses")
 @admin_only
 @handle_errors
+@log
 def approve_courses(request: Request, body=Body()):
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
@@ -92,7 +91,9 @@ def approve_courses(request: Request, body=Body()):
         return validation_response
 
     content = course.list_course(1, user_id)
-    name, course_id = check_valid_course(approval_details.get("course_name"), content)
+    name, course_id = check_if_valid_course_name(
+        approval_details.get("course_name"), content
+    )
 
     if not name or not course_id:
         return JSONResponse(
@@ -107,6 +108,7 @@ def approve_courses(request: Request, body=Body()):
 @router.delete("/courses")
 @admin_only
 @handle_errors
+@log
 def delete_courses(request: Request, body=Body()):
     delete_course_details = body
     user_data = extract_token_data(request)
@@ -121,7 +123,7 @@ def delete_courses(request: Request, body=Body()):
         return validation_response
 
     content = course.list_course(1, user_id)
-    name, course_id = check_valid_course(
+    name, course_id = check_if_valid_course_name(
         delete_course_details.get("course_name"), content
     )
 
@@ -136,12 +138,13 @@ def delete_courses(request: Request, body=Body()):
 
 @router.post("/courses/{course_name}")
 @handle_errors
+@log
 def purchase_course(request: Request, course_name: str = Path()):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
 
     content = course.list_course(4, user_id)
-    name, course_id = check_valid_course(course_name, content)
+    name, course_id = check_if_valid_course_name(course_name, content)
     if not name or not course_id:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -155,6 +158,7 @@ def purchase_course(request: Request, course_name: str = Path()):
 @router.get("/pending_courses")
 @admin_only
 @handle_errors
+@log
 def pending_courses(request: Request):
     content = list_pending_course()
     if content is None:
@@ -194,7 +198,7 @@ def view_course_feedback(request: Request, course_name: str = Path()):
 
     content = course.list_course(4, user_id)
     feedback = Feedback()
-    name, course_id = check_valid_course(course_name, content)
+    name, course_id = check_if_valid_course_name(course_name, content)
     if not name or not course_id:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -234,7 +238,7 @@ def add_course_feedback(request: Request, course_name: str = Path(), body=Body()
             comments = user_feedback.get("comments")
             if not comments:
                 comments = "No comments"
-            name, course_id = check_valid_course(course_name, content)
+            name, course_id = check_if_valid_course_name(course_name, content)
             if not name or not course_id:
                 return JSONResponse(
                     status_code=status.HTTP_404_NOT_FOUND,
@@ -259,7 +263,7 @@ def view_course_faq(request: Request, course_name: str = Path()):
     user_id = jwt_token_data.get("user_id")
     faq = Faq()
     content = course.list_course(4, user_id)
-    name, course_id = check_valid_course(course_name, content)
+    name, course_id = check_if_valid_course_name(course_name, content)
 
     if not name or not course_id:
         return JSONResponse(
@@ -298,7 +302,7 @@ def add_course_faq(request: Request, course_name: str = Path(), body=Body()):
     if validation_response:
         logger.debug(f"not valid FAQ schema --> {validation_response}")
         return validation_response
-    name, course_id = check_valid_course(course_name, content)
+    name, course_id = check_if_valid_course_name(course_name, content)
 
     if not name or not course_id:
         return JSONResponse(
@@ -315,3 +319,9 @@ def add_course_faq(request: Request, course_name: str = Path(), body=Body()):
     )
 
     return {"message": message}
+
+
+def list_pending_course():
+    query = get_query.get("PENDING_STATUS")
+    result = DatabaseConnection.get_from_db(query, ("pending",))
+    return result

@@ -1,20 +1,13 @@
 import os
 import sys
 
+from helpers.setup_logger import initialize_logger
+
 sys.path.append(os.path.dirname(__file__))
-import logging
 from fastapi import FastAPI
 from routes import courses, login_signup, mentors, students
 
-logging.basicConfig(
-    filename="app.log",
-    filemode="a",
-    format="%(asctime)s,%(msecs)d %(name)s - %(levelname)s - %(message)s",
-    datefmt="%H:%M:%S",
-    level=logging.DEBUG,
-)
-logger = logging.getLogger(__name__)
-
+initialize_logger()
 
 app = FastAPI()
 app.include_router(courses.router)

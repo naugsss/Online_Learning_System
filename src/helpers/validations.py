@@ -34,7 +34,7 @@ def validate_request_data(request_data, schema):
         )
 
 
-def check_valid_course(course_name, content):
+def check_if_valid_course_name(course_name, content):
     is_valid_course = False
     course_id = None
     for row in content:

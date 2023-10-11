@@ -2,9 +2,16 @@ register_schema = {
     "type": "object",
     "properties": {
         "name": {"type": "string"},
-        "email": {"type": "string"},
+        "email": {
+            "type": "string",
+            "pattern": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b",
+        },
         "username": {"type": "string"},
-        "password": {"type": "string"},
+        "password": {
+            "type": "string",
+            "pattern": r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$",
+            "min_length": 5,
+        },
     },
     "required": ["username", "password"],
 }

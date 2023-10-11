@@ -1,20 +1,25 @@
 from controllers.mentor import Mentor
-from helpers.decorators import admin_only, mentor_only
+from helpers.handle_error_decorator import admin_only, handle_errors, mentor_only
 from helpers.jwt_helpers import extract_token_data
 from helpers.custom_response import get_error_response
 from fastapi import Body, Request, APIRouter
-from helpers.inputs_and_validations import validate_request_data
+from helpers.validations import validate_request_data
 from schemas import mentor_schema
-from helpers.mentor_earnings import view_every_mentor_earning, view_mentor_earning
+from helpers.mentor_earnings import view_every_mentor_earning
 from controllers.courses import Courses
 from helpers.list_courses import list_course_role_3
+import logging
+
+from helpers.setup_logger import log
 
 router = APIRouter(prefix="", tags=["mentors"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/mentor")
 @admin_only
-async def add_new_mentor(request: Request, body=Body()):
+@log
+def add_new_mentor(request: Request, body=Body()):
     mentor_data = body
     validation_response = validate_request_data(mentor_data, mentor_schema)
     if validation_response:
@@ -26,14 +31,16 @@ async def add_new_mentor(request: Request, body=Body()):
 
 
 @router.get("/mentor")
-async def mentor_earning(request: Request):
+@handle_errors
+@log
+def mentor_earning(request: Request):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
     role = jwt_token_data.get("role")
     if role == 1:
         return view_every_mentor_earning()
     elif role == 3:
-        return view_mentor_earning(user_id)
+        return view_every_mentor_earning(user_id)
     else:
         return get_error_response(401, "You are not authorized.")
 

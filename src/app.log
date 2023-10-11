@@ -13,3 +13,8 @@
 16:04:37,231 routes.courses - DEBUG - not valid delete course schema --> 403
 16:06:49,180 routes.courses - DEBUG - not valid delete course schema --> <starlette.responses.JSONResponse object at 0x0000028E77561750>
 16:07:17,7 routes.courses - DEBUG - not valid delete course schema --> <starlette.responses.JSONResponse object at 0x0000018769F06110>
+14:32:10,600 root - ERROR - 1052 (23000): Column 'id' in field list is ambiguous
+18:15:13,499 helpers.setup_logger - DEBUG - mentor_earning called with ((), {'request': <starlette.requests.Request object at 0x0000020285C93290>}).
+18:15:13,557 helpers.setup_logger - DEBUG - mentor_earning returned [{'name': 'abhishek', 'course_name': 'Master dsa', 'earning': 3000}, {'name': 'abhishek', 'course_name': 'Java script', 'earning': 32000}, {'name': 'abhishek', 'course_name': 'clean code', 'earning': 3000}, {'name': 'abhishek', 'course_name': 'Python', 'earning': 1500}, {'name': 'abhishek', 'course_name': 'dsa master', 'earning': 0}, {'name': 'abhishek', 'course_name': 'dsa ', 'earning': 0}].
+18:15:15,818 helpers.setup_logger - DEBUG - mentor_earning called with ((), {'request': <starlette.requests.Request object at 0x0000020286019C10>}).
+18:15:15,870 helpers.setup_logger - DEBUG - mentor_earning returned [{'name': 'abhishek', 'course_name': 'Master dsa', 'earning': 3000}, {'name': 'abhishek', 'course_name': 'Java script', 'earning': 32000}, {'name': 'abhishek', 'course_name': 'clean code', 'earning': 3000}, {'name': 'abhishek', 'course_name': 'Python', 'earning': 1500}, {'name': 'abhishek', 'course_name': 'dsa master', 'earning': 0}, {'name': 'abhishek', 'course_name': 'dsa ', 'earning': 0}].

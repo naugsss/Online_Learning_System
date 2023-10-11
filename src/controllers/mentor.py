@@ -8,8 +8,8 @@ get_query = JsonData.load_data()
 
 class Mentor(Courses):
     def add_mentor(self, user_name):
-        # TODO:
-        # is_user_present, is_valid_username isko change krna h
+        # TODO: is_user_present, is_valid_username isko change krna h
+
         is_valid_username = db.get_from_db(
             get_query.get("GET_FROM_AUTHENTICATION"), (user_name,)
         )

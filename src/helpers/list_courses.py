@@ -6,12 +6,6 @@ DatabaseConnection = DatabaseConnection()
 get_query = JsonData.load_data()
 
 
-def list_pending_course():
-    query = get_query.get("PENDING_STATUS")
-    result = DatabaseConnection.get_from_db(query, ("pending",))
-    return result
-
-
 def list_my_course(content):
     response = []
     for val in content:

@@ -48,7 +48,6 @@ class DatabaseConnection:
             return response
         except mysql.connector.Error as err:
             logging.error(err)
-            print("Please check you inputs and try once again.")
 
     def update_db(self, query, val=None):
         try:
@@ -61,7 +60,6 @@ class DatabaseConnection:
 
         except mysql.connector.Error as err:
             logging.error(err)
-            print("Please check you inputs and try once again.")
 
     def delete_from_db(self, query, val=None):
         try:
@@ -73,7 +71,6 @@ class DatabaseConnection:
                     cursor.execute(query, val)
         except mysql.connector.Error as err:
             logging.error(err)
-            print("Please check you inputs and try once again.")
 
     def get_from_db(self, query, val=None):
         try:
@@ -87,7 +84,6 @@ class DatabaseConnection:
             return response
         except mysql.connector.Error as err:
             logging.error(err)
-            print("Please check you inputs and try once again.")
 
     def get_role_from_db(self, query, val=None):
         try:
@@ -103,7 +99,6 @@ class DatabaseConnection:
                 return user_id
         except mysql.connector.Error as err:
             logging.error(err)
-            print("Please check you inputs and try once again.")
 
     def get_course_id(self, query, val=None):
         try:
@@ -119,7 +114,6 @@ class DatabaseConnection:
                 return course_id
         except mysql.connector.Error as err:
             logging.error(err)
-            print("Please check you inputs and try once again.")
 
     def insert_user_details(self, name, email, username, password):
         sql = "INSERT INTO users (name, email) VALUES (%s, %s)"
