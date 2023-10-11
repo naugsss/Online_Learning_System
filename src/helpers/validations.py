@@ -1,4 +1,3 @@
-import re
 from fastapi.responses import JSONResponse
 import jsonschema
 from fastapi import status
@@ -21,6 +20,10 @@ def validate_request_data(request_data, schema):
                     prop_value, float
                 ):
                     raise ValueError(f"The '{prop}' field must be a Float value.")
+                elif prop_schema["type"] == "string" and not isinstance(
+                    prop_value, str
+                ):
+                    raise ValueError(f"The '{prop}' field must is not valid")
 
     except jsonschema.exceptions.ValidationError as e:
         error_message = str(e)
@@ -29,22 +32,6 @@ def validate_request_data(request_data, schema):
             status_code=status.HTTP_403_FORBIDDEN,
             content=get_error_response(403, first_line),
         )
-
-
-def validate_password(password):
-    pattern = r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$"
-    if re.match(pattern, password):
-        return True
-    else:
-        return False
-
-
-def validate_email(email):
-    regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
-    if re.fullmatch(regex, email):
-        return True
-    else:
-        return False
 
 
 def check_valid_course(course_name, content):
