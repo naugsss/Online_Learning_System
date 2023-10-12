@@ -1,47 +1,13 @@
 import functools
 import traceback
-from fastapi import logger, status
+import logging
+from fastapi import status
 from fastapi.responses import JSONResponse
-from helpers.custom_response import get_error_response
-from helpers.jwt_helpers import extract_token_data
+from src.helpers.custom_response import get_error_response
+from src.helpers.jwt_helpers import extract_token_data
+from src.configurations.config import access_control_list
 
-
-def mentor_only(function):
-    @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        request = kwargs.get("request")
-        access_token = extract_token_data(request)
-        role = access_token.get("role")
-
-        if role != 3:
-            return JSONResponse(
-                status_code=status.HTTP_403_FORBIDDEN,
-                content=get_error_response(
-                    403, "You do not have required permissions."
-                ),
-            )
-        return function(*args, **kwargs)
-
-    return wrapper
-
-
-def admin_only(function):
-    @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        request = kwargs.get("request")
-        access_token = extract_token_data(request)
-        role = access_token.get("role")
-
-        if role != 1:
-            return JSONResponse(
-                status_code=status.HTTP_403_FORBIDDEN,
-                content=get_error_response(
-                    403, "You do not have the required permissions."
-                ),
-            )
-        return function(*args, **kwargs)
-
-    return wrapper
+logger = logging.getLogger(__name__)
 
 
 # def grant_access(fun):
@@ -51,13 +17,13 @@ def admin_only(function):
 #         token = extract_token_data(request=request)
 #         role = token.get("role")
 #         operation = fun.__name__
-#         if operation in access_control_list.get(role):
+#         if operation in access_control_list.get(str(role)):
 #             return fun(*args, **kwargs)
 #         else:
 #             return JSONResponse(
 #                 status_code=status.HTTP_403_FORBIDDEN,
 #                 content=get_error_response(
-#                     code=403,
+#                     status_code=403,
 #                     message="You do not have the permissions to perform this action.",
 #                 ),
 #             )
@@ -106,7 +72,7 @@ def handle_errors(function):
             return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 content=get_error_response(
-                    500, str(error), "An Error Occurred Internally in the Server"
+                    500, "An Error Occurred Internally in the Server"
                 ),
             )
 

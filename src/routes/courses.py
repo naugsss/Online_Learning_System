@@ -1,36 +1,38 @@
 import logging
-from helpers.setup_logger import log
 from fastapi import APIRouter, Body, Request, status, Path
 from fastapi.responses import JSONResponse
-from helpers.custom_response import get_error_response
-from helpers.jwt_helpers import extract_token_data
-from controllers.courses import Courses
-from helpers.validations import (
-    check_if_valid_course_name,
-    validate_request_data,
-)
-from schemas import (
+from src.helpers.schemas.feedback_schema import feedback_schema
+from src.helpers.schemas.course_schema import (
     course_schema,
     approval_schema,
     validate_delete_course_schema,
-    feedback_schema,
-    faq_schema,
 )
-from helpers.handle_error_decorator import admin_only, handle_errors, mentor_only
-from helpers.list_courses import (
-    list_course_role_1,
-    list_course_role_2_or_role_4,
+from src.helpers.schemas.faq_schema import faq_schema
+from src.helpers.setup_logger import log
+from src.helpers.custom_response import get_error_response
+from src.helpers.jwt_helpers import extract_token_data
+from src.controllers.courses import Courses
+from src.helpers.validations import (
+    check_if_valid_course_name,
+    validate_request_data,
 )
-from controllers.feedback import Feedback
-from controllers.faq import Faq
-from models.database import DatabaseConnection
-from models.fetch_json_data import JsonData
-from helpers.roles_enum import Roles
+
+from src.helpers.handle_error_decorator import handle_errors
+from src.helpers.access_decorator import grant_access
+from src.helpers.list_courses import (
+    list_course_by_role,
+)
+from src.controllers.feedback import Feedback
+from src.controllers.faq import Faq
+
+from src.models.database import db
+from src.configurations.config import sql_queries
+
+from src.helpers.roles_enum import Roles
 
 
 logger = logging.getLogger(__name__)
-DatabaseConnection = DatabaseConnection()
-get_query = JsonData.load_data()
+QUERIES = sql_queries
 router = APIRouter(prefix="", tags=["courses"])
 course = Courses()
 feedback = Feedback()
@@ -38,7 +40,6 @@ feedback = Feedback()
 
 @router.get("/courses")
 @handle_errors
-@log
 def get_courses(request: Request):
     jwt_token_data = extract_token_data(request)
     role = jwt_token_data.get("role")
@@ -47,17 +48,16 @@ def get_courses(request: Request):
     try:
         if role == Roles.ADMIN.value:
             content = course.list_course(Roles.ADMIN.value, user_id)
-            return list_course_role_1(content)
+            return list_course_by_role(content, Roles.ADMIN.value)
         else:
-            return list_course_role_2_or_role_4(content)
+            return list_course_by_role(content)
     except Exception as e:
         return e
 
 
 @router.post("/courses")
-@mentor_only
+@grant_access
 @handle_errors
-@log
 def add_course(request: Request, body=Body()):
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
@@ -77,9 +77,8 @@ def add_course(request: Request, body=Body()):
 
 
 @router.put("/courses")
-@admin_only
+@grant_access
 @handle_errors
-@log
 def approve_courses(request: Request, body=Body()):
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
@@ -106,9 +105,8 @@ def approve_courses(request: Request, body=Body()):
 
 
 @router.delete("/courses")
-@admin_only
+@grant_access
 @handle_errors
-@log
 def delete_courses(request: Request, body=Body()):
     delete_course_details = body
     user_data = extract_token_data(request)
@@ -118,7 +116,6 @@ def delete_courses(request: Request, body=Body()):
     )
 
     if validation_response:
-        # printing object in validation response
         logger.debug(f"not valid delete course schema --> {validation_response}")
         return validation_response
 
@@ -138,7 +135,6 @@ def delete_courses(request: Request, body=Body()):
 
 @router.post("/courses/{course_name}")
 @handle_errors
-@log
 def purchase_course(request: Request, course_name: str = Path()):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
@@ -156,14 +152,13 @@ def purchase_course(request: Request, course_name: str = Path()):
 
 
 @router.get("/pending_courses")
-@admin_only
+@grant_access
 @handle_errors
-@log
 def pending_courses(request: Request):
     content = list_pending_course()
     if content is None:
         return {"message": "No pending course"}
-    return list_course_role_1(content)
+    return list_course_by_role(content)
 
 
 @router.get("/courses/{course_name}")
@@ -224,8 +219,8 @@ def view_course_feedback(request: Request, course_name: str = Path()):
 def add_course_feedback(request: Request, course_name: str = Path(), body=Body()):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
-
     user_feedback = body
+    course = Courses()
     content = course.list_course(4, user_id)
     validation_response = validate_request_data(user_feedback, feedback_schema)
     if validation_response:
@@ -286,7 +281,7 @@ def view_course_faq(request: Request, course_name: str = Path()):
 
 
 @router.post("/courses/{course_name}/user_faq")
-@mentor_only
+@grant_access
 @handle_errors
 def add_course_faq(request: Request, course_name: str = Path(), body=Body()):
     jwt_token_data = extract_token_data(request)
@@ -310,9 +305,7 @@ def add_course_faq(request: Request, course_name: str = Path(), body=Body()):
             content=get_error_response(404, "No such course exists"),
         )
 
-    content = DatabaseConnection.get_from_db(
-        get_query.get("GET_FAQ_DETAILS"), (user_id,)
-    )
+    content = db.get_from_db(QUERIES.get("GET_FAQ_DETAILS"), (user_id,))
     faq = Faq()
     message = faq.add_faq(
         content, faq_data["question"], faq_data["answer"], course_name
@@ -322,6 +315,6 @@ def add_course_faq(request: Request, course_name: str = Path(), body=Body()):
 
 
 def list_pending_course():
-    query = get_query.get("PENDING_STATUS")
-    result = DatabaseConnection.get_from_db(query, ("pending",))
+    query = QUERIES.get("PENDING_STATUS")
+    result = db.get_from_db(query, ("pending",))
     return result

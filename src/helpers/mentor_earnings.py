@@ -1,7 +1,9 @@
-from controllers.earning import Earning
+from src.controllers.earning import Earning
 
 
 def view_every_mentor_earning(user_id=None):
+    """This will return the earning in a proper dictionary format"""
+
     earning = Earning()
 
     if user_id is None:

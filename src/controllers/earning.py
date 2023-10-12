@@ -1,23 +1,30 @@
-from models.database import db
-from models.fetch_json_data import JsonData
+from src.models.database import db
+from src.configurations.config import sql_queries
 
-# db = db()
-get_query = JsonData.load_data()
+
+QUERIES = sql_queries
 
 
 class Earning:
-
     def calculate_mentor_earning(self, user_id=None):
+        """calculates the total earning of a mentor from his course
+
+        Args:
+            user_id (int, optional): the user id of the mentor. Defaults to None.
+
+        Returns:
+            int/None: returns the total earning of a mentor from his course otherwise None.
+        """
         if user_id is None:
-            result = db.get_from_db(get_query.get("COURSE_DETAILS"))
+            result = db.get_from_db(QUERIES.get("COURSE_DETAILS"))
         else:
-            result = db.get_from_db(get_query.get("GET_EARNING_DATA"), (user_id,))
+            result = db.get_from_db(QUERIES.get("GET_EARNING_DATA"), (user_id,))
         if result is not None:
             values = []
             for row in result:
                 if user_id is None:
                     user_id = row[3]
-                name = db.get_from_db(get_query.get("GET_NAME"), (user_id,))
+                name = db.get_from_db(QUERIES.get("GET_NAME"), (user_id,))
                 values.append([name[0][0], row[2], row[0] * row[1]])
             return values
         return None

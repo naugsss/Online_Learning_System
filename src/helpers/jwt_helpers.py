@@ -1,7 +1,7 @@
+import os
 from fastapi import HTTPException, Request
 from jose import JWTError, jwt
 from environs import Env
-import os
 
 env = Env()
 

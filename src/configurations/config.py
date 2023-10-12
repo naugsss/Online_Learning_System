@@ -1,26 +1,7 @@
-# import json
-
-
-# class JsonData:
-#     data = None
-
-#     @classmethod
-#     def load_data(cls):
-#         if cls.data is None:
-#             with open(
-#                 r"C:\coding\WG\Online_Learning_System - Fast\src\utils\query_data.json",
-#                 "r",
-#             ) as file:
-#                 cls.data = json.load(file)
-#         return cls.data
-
 import json
 
-connection_parameters = None
-error_format = None
 access_control_list = None
 sql_queries = None
-prompts = None
 
 
 def load_configuration():
@@ -29,32 +10,35 @@ def load_configuration():
         prompts_path = config.get("prompts_path")
         sql_queries_path = config.get("sql_queries_path")
         access_control_list = config.get("access_control_list")
-        prompts = get_prompts(prompts_path)
-        QUERIES = get_sql_queries(sql_queries_path)
-
+        sql_queries = get_sql_queries()
+        prompts = get_prompts()
         return (
-            connection_parameters,
             prompts,
-            QUERIES,
-            error_format,
+            sql_queries,
             access_control_list,
         )
 
 
-def get_prompts(prompts_path):
-    with open(prompts_path, "r") as fp:
-        return json.load(fp)
+def get_sql_queries():
+    with open(
+        "src/utils/query_data.json",
+        "r",
+    ) as file:
+        sql_queries = json.load(file)
+        return sql_queries
 
 
-def get_sql_queries(sql_queries_path):
-    with open(sql_queries_path, "r") as fp:
-        return json.load(fp)
+def get_prompts():
+    with open(
+        "src/utils/prompts.json",
+        "r",
+    ) as file:
+        prompts = json.load(file)
+        return prompts
 
 
 (
-    connection_parameters,
     prompts,
     sql_queries,
-    error_format,
     access_control_list,
 ) = load_configuration()

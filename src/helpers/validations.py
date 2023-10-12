@@ -1,7 +1,7 @@
 from fastapi.responses import JSONResponse
-import jsonschema
 from fastapi import status
-from helpers.custom_response import get_error_response
+import jsonschema
+from src.helpers.custom_response import get_error_response
 
 
 def validate_request_data(request_data, schema):
@@ -27,7 +27,7 @@ def validate_request_data(request_data, schema):
 
     except jsonschema.exceptions.ValidationError as e:
         error_message = str(e)
-        first_line = error_message.split("\n")[0]
+        first_line = error_message.split("\n", maxsplit=1)[0]
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content=get_error_response(403, first_line),
@@ -45,5 +45,5 @@ def check_if_valid_course_name(course_name, content):
 
     if not is_valid_course:
         return [None, None]
-    else:
-        return [course_name, course_id]
+
+    return [course_name, course_id]

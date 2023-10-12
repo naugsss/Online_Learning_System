@@ -1,9 +1,10 @@
 import hashlib
-from models.fetch_json_data import JsonData
-from models.database import db
-from helpers.roles_enum import Roles
 
-get_query = JsonData.load_data()
+from src.configurations.config import sql_queries
+from src.models.database import db
+from src.helpers.roles_enum import Roles
+
+QUERIES = sql_queries
 
 
 class Login:
@@ -16,6 +17,15 @@ class Login:
         self.password = None
 
     def login_user(self, username, password):
+        """user logins with username and password
+
+        Args:
+            username (string): username of the user
+            password (string): password of the user
+
+        Returns:
+            list: if credentials are valid, return role and user of the user else nothing.
+        """
         self.username = username
         self.password = password
         user_data = self.validate_credentials(self.username, self.password)
@@ -26,13 +36,24 @@ class Login:
         return None
 
     def sign_up(self, name, email, username, password):
+        """user sign up with his details
+
+        Args:
+            name (string): name of the user
+            email (string): email of the user
+            username (string): username of the user
+            password (string): password of the user
+
+        Returns:
+            list: if the details are valid, return the role and user id of the user else return None.
+        """
         self.name = name
         self.email = email
         self.username = username
         self.password = password
 
         is_valid_username = db.get_from_db(
-            get_query.get("GET_FROM_AUTHENTICATION"), (self.username,)
+            QUERIES.get("GET_FROM_AUTHENTICATION"), (self.username,)
         )
 
         if is_valid_username:
@@ -49,27 +70,49 @@ class Login:
                 return [self.role, self.user_id]
 
     def validate_credentials(self, username, password):
+        """validate credentials against the given username and password
+
+        Args:
+            username (string): username of the user
+            password (string): password of the user
+
+        Returns:
+            int: Role of the user, if valid otherwise returns None.
+        """
         hashed_password = hashlib.sha256(password.encode("utf-8")).hexdigest()
-        response = db.get_from_db(get_query.get("GET_FROM_AUTHENTICATION"), (username,))
+        response = db.get_from_db(QUERIES.get("GET_FROM_AUTHENTICATION"), (username,))
         if response is None or len(response) == 0:
             return None
-        else:
-            if response[0][2] == hashed_password:
-                return self.get_role(response[0][3])
-            else:
-                return None
+
+        if response[0][2] == hashed_password:
+            return self.get_role(response[0][3])
+
+        return None
 
     def get_role(self, user_id):
-        result = db.get_from_db(get_query.get("GET_USER_ROLES"), (user_id,))
+        """get the role for the given user from the database
+
+        Args:
+            user_id (int): user id of the user
+
+        Returns:
+            list: role and user id of the user
+        """
+        result = db.get_from_db(QUERIES.get("GET_USER_ROLES"), (user_id,))
         role_id = result[0][2]
         return [role_id, user_id]
 
     @staticmethod
     def update_role(user_id):
-        result = db.get_from_db(get_query.get("GET_USER_ROLES"), (user_id,))
+        """update the role of the user
+
+        Args:
+            user_id (int): user id of the user.
+        """
+        result = db.get_from_db(QUERIES.get("GET_USER_ROLES"), (user_id,))
         for row in result:
             if row[2] == Roles.VISITOR.value:
                 db.update_db(
-                    get_query.get("UPDATE_USER_ROLES"), (Roles.STUDENT.value, user_id)
+                    QUERIES.get("UPDATE_USER_ROLES"), (Roles.STUDENT.value, user_id)
                 )
                 return

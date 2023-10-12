@@ -1,0 +1,27 @@
+{
+    "COURSE_ALREADY_EXISTS": "Another course with the same name already exists. Please try again.",
+    "COURSE_APPROVAL_REQUEST": "Course approval request sent to admin.",
+    "COURSE_DEACTIVATED": "Course marked as deactivated successfully",
+    "COURSE_APPROVED": "Course approved successfully",
+    "COURSE_REJECTED": "Course rejected",
+    "PURCHASE_ERROR": "There was some error while purchasing the course, please try again.",
+    "COURSE_PURCHASED_SUCESS": "Course purchased successfully",
+    "COURSE_ALREADY_PURCHASED": "You've already purchased this course.",
+    "NO_COURSE_PURCHASED": "You haven't purchased any course", 
+    "NO_SUCH_COURSE": "No such course exists",
+    "FAQ_ADDED_SUCESS": "FAQ added successfully",
+    "FEEDBACK_ADDED_SUCESS": "Feedback added successfully",
+    "ALREADY_A_MENTOR": "This person is already a mentor",
+    "MENTOR_ADDED_SUCESS": "Mentor added successfully",
+    "NO_SUCH_USERNAME": "No such username exists.",
+    "errors": {
+    "INTERNAL_SERVER_ERROR": "An Error Occurred Internally in the Server",
+    "CONFLICT_ERROR": "Conflict in the Database",
+    "UNAUTHORIZED_ERROR": "Unauthorized Access",
+    "BAD_REQUEST_ERROR": "Bad Request",
+    "FORBIDDEN_ERROR": "Forbidden Access",
+    "FORBIDDEN_STATUS": "You are not allowed to perform this operation.",
+    "EXPIRED_TOKEN_ERROR": "Token Expired",
+    "INVALID_TOKEN_ERROR": "Invalid Token"
+}
+}

@@ -1,29 +1,38 @@
-from controllers.courses import Courses
-from models.database import db
-from models.fetch_json_data import JsonData
-from helpers.roles_enum import Roles
+"""Operation related to mentor"""
+from src.controllers.courses import Courses
+from src.models.database import db
+from src.helpers.roles_enum import Roles
+from src.configurations.config import sql_queries, prompts
 
-get_query = JsonData.load_data()
+PROMPTS = prompts
+QUERIES = sql_queries
 
 
 class Mentor(Courses):
     def add_mentor(self, user_name):
-        # TODO: is_user_present, is_valid_username isko change krna h
+        """add a new mentor
+
+        Args:
+            user_name (string): username of the user, to be made a mentor
+
+        Returns:
+            string: custom message, whether the Mentor was added or not
+        """
 
         is_valid_username = db.get_from_db(
-            get_query.get("GET_FROM_AUTHENTICATION"), (user_name,)
+            QUERIES.get("GET_FROM_AUTHENTICATION"), (user_name,)
         )
         if is_valid_username:
             user_id = is_valid_username[0][3]
-            user_role = db.get_from_db(get_query.get("GET_USER_ROLES"), (user_id,))
+            user_role = db.get_from_db(QUERIES.get("GET_USER_ROLES"), (user_id,))
             if user_role[0][2] == Roles.MENTOR.value:
-                return "This person is already a mentor"
+                return PROMPTS.get("ALREADY_A_MENTOR")
             result = db.insert_into_db(
-                get_query.get("GET_FROM_AUTHENTICATION"), (user_name,)
+                QUERIES.get("GET_FROM_AUTHENTICATION"), (user_name,)
             )
             db.update_db(
-                get_query.get("UPDATE_INTO_USER_ROLES"),
+                QUERIES.get("UPDATE_INTO_USER_ROLES"),
                 (Roles.MENTOR.value, result[0][3]),
             )
-            return "Mentor added successfully"
-        return "No such username exists."
+            return PROMPTS.get("MENTOR_ADDED_SUCESS")
+        return PROMPTS.get("NO_SUCH_USERNAME")

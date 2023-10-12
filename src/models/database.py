@@ -1,9 +1,7 @@
 import os
-from dotenv import load_dotenv
 import hashlib
 from datetime import date
-import json
-import logging
+from dotenv import load_dotenv
 import mysql.connector
 
 load_dotenv()
@@ -21,7 +19,7 @@ class DatabaseConnection:
             )
 
             self.cursor = self.db.cursor()
-        except Exception as e:
+        except Exception:
             raise ValueError
 
     def __enter__(self):
@@ -30,90 +28,55 @@ class DatabaseConnection:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.db.close()
 
-    with open(
-        r"C:\\coding\WG\watchguard_daily_task_Aaryan\\online learning\\Online_Learning_System\src\\utils\\query_data.json",
-        "r",
-    ) as json_file:
-        data = json.load(json_file)
-
     def insert_into_db(self, query, val=None):
-        try:
-            with DatabaseConnection() as db:
-                cursor = db.cursor()
-                if val is None:
-                    cursor.execute(query)
-                else:
-                    cursor.execute(query, val)
-                response = cursor.fetchall()
-            return response
-        except mysql.connector.Error as err:
-            logging.error(err)
+        if val is None:
+            self.cursor.execute(query)
+        else:
+            self.cursor.execute(query, val)
+        response = self.cursor.fetchall()
+        return response
 
     def update_db(self, query, val=None):
-        try:
-            with DatabaseConnection() as db:
-                cursor = db.cursor()
-                if val is None:
-                    cursor.execute(query)
-                else:
-                    cursor.execute(query, val)
-
-        except mysql.connector.Error as err:
-            logging.error(err)
+        if val is None:
+            self.cursor.execute(query)
+        else:
+            self.cursor.execute(query, val)
 
     def delete_from_db(self, query, val=None):
-        try:
-            with DatabaseConnection() as db:
-                cursor = db.cursor()
-                if val is None:
-                    cursor.execute(query)
-                else:
-                    cursor.execute(query, val)
-        except mysql.connector.Error as err:
-            logging.error(err)
+        if val is None:
+            self.cursor.execute(query)
+        else:
+            self.cursor.execute(query, val)
 
     def get_from_db(self, query, val=None):
-        try:
-            with DatabaseConnection() as db:
-                cursor = db.cursor()
-                if val is None:
-                    cursor.execute(query)
-                else:
-                    cursor.execute(query, val)
-                response = cursor.fetchall()
-            return response
-        except mysql.connector.Error as err:
-            logging.error(err)
+        if val is None:
+            self.cursor.execute(query)
+        else:
+            self.cursor.execute(query, val)
+        response = self.cursor.fetchall()
+        return response
 
     def get_role_from_db(self, query, val=None):
-        try:
-            with DatabaseConnection() as db:
-                cursor = db.cursor()
-                if val is None:
-                    cursor.execute(query)
-                    user_id = cursor.lastrowid
-                    return user_id
-                else:
-                    cursor.execute(query, val)
-                user_id = cursor.lastrowid
-                return user_id
-        except mysql.connector.Error as err:
-            logging.error(err)
+        if val is None:
+            self.cursor.execute(query)
+            user_id = self.cursor.lastrowid
+            return user_id
+
+        self.cursor.execute(query, val)
+        user_id = self.cursor.lastrowid
+        return user_id
 
     def get_course_id(self, query, val=None):
-        try:
-            with DatabaseConnection() as db:
-                cursor = db.cursor()
-                if val is None:
-                    cursor.execute(query)
-                    course_id = cursor.lastrowid
-                    return course_id
-                else:
-                    cursor.execute(query, val)
-                course_id = cursor.lastrowid
-                return course_id
-        except mysql.connector.Error as err:
-            logging.error(err)
+        """get the course id from the database"""
+
+        if val is None:
+            self.cursor.execute(query)
+            course_id = self.cursor.lastrowid
+            return course_id
+        else:
+            self.cursor.execute(query, val)
+        course_id = self.cursor.lastrowid
+        return course_id
 
     def insert_user_details(self, name, email, username, password):
         sql = "INSERT INTO users (name, email) VALUES (%s, %s)"

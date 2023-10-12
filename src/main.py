@@ -1,11 +1,7 @@
-import os
-import sys
-
-from helpers.setup_logger import initialize_logger
-
-sys.path.append(os.path.dirname(__file__))
 from fastapi import FastAPI
-from routes import courses, login_signup, mentors, students
+from src.routes import courses, login_signup, mentors, students
+from src.helpers.setup_logger import initialize_logger
+
 
 initialize_logger()
 
