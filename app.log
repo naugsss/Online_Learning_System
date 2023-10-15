@@ -501,3 +501,47 @@ fastapi.exceptions.HTTPException
 TypeError: 'CMySQLCursor' object is not callable
 
 15:13:28,246 src.helpers.handle_error_decorator - ERROR - Error Occurred: login_user Method Error: 'CMySQLCursor' object is not callable
+16:02:45,668 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 38, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 29, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 37, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:02:45,668 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+14:03:27,644 src.helpers.setup_logger - INFO - function called admin
+14:07:01,664 src.helpers.setup_logger - INFO - C:\coding\WG\Online_Learning_System - Fast\src\routes\courses.py - get_courses at line 51: function called admin
+14:08:11,436 src.helpers.setup_logger - DEBUG - C:\coding\WG\Online_Learning_System - Fast\src\routes\courses.py - get_courses at line 51: function called admin
+16:59:07,994 src.helpers.handle_error_decorator - DEBUG - Error Occurred: purchase_courses Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\jwt_helpers.py", line 19, in extract_token_data
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORTIHM])
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\anaugaraiya\.virtualenvs\Online_Learning_System_-_Fast-H9MtE_4s\Lib\site-packages\jose\jwt.py", line 157, in decode
+    _validate_claims(
+  File "C:\Users\anaugaraiya\.virtualenvs\Online_Learning_System_-_Fast-H9MtE_4s\Lib\site-packages\jose\jwt.py", line 481, in _validate_claims
+    _validate_exp(claims, leeway=leeway)
+  File "C:\Users\anaugaraiya\.virtualenvs\Online_Learning_System_-_Fast-H9MtE_4s\Lib\site-packages\jose\jwt.py", line 314, in _validate_exp
+    raise ExpiredSignatureError("Signature has expired.")
+jose.exceptions.ExpiredSignatureError: Signature has expired.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 17, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\students.py", line 13, in purchase_courses
+    jwt_token_data = extract_token_data(request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\jwt_helpers.py", line 29, in extract_token_data
+    raise HTTPException(status_code=404, detail=str(error))
+fastapi.exceptions.HTTPException
+
+16:59:07,994 src.helpers.handle_error_decorator - ERROR - Error Occurred: purchase_courses Method Error: 
+21:51:36,512 src.helpers.setup_logger - DEBUG - function called admin
+22:41:42,821 src.helpers.setup_logger - DEBUG - function called admin

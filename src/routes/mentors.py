@@ -8,8 +8,8 @@ from src.helpers.custom_response import get_error_response
 from src.helpers.schemas.mentor_schema import mentor_schema
 from src.helpers.validations import validate_request_data
 from src.helpers.mentor_earnings import view_every_mentor_earning
-from src.controllers.courses import Courses
-from src.helpers.list_courses import list_course_by_role
+from src.controllers.courses import Courses, list_course_by_role
+
 
 router = APIRouter(prefix="", tags=["mentors"])
 logger = logging.getLogger(__name__)

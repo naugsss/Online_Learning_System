@@ -1,6 +1,7 @@
 """operation related to courses"""
 from datetime import date
 from src.controllers.auth import Login
+from src.helpers.course_enum import CourseField
 from src.models.database import db
 from src.configurations.config import sql_queries, prompts
 from src.helpers.roles_enum import Roles
@@ -96,7 +97,7 @@ class Courses:
             db.update_db(
                 QUERIES.get("UPDATE_PENDING_APPROVAL_STATUS"), ("approved", course_id)
             )
-            return QUERIES.get("COURSE_APPROVED")
+            return PROMPTS.get("COURSE_APPROVED")
 
         db.delete_from_db(QUERIES.get("DELETE_FROM_MENTOR_COURSE"), (course_id,))
         db.delete_from_db(QUERIES.get("DELETE_FROM_COURSES"), (course_id,))
@@ -113,6 +114,7 @@ class Courses:
         """
         query = QUERIES.get("GET_STUDENT_COURSES")
         content = db.get_from_db(query, (user_id,))
+        # print(content)
         return content
 
     def view_course_content(self, course_name):
@@ -140,6 +142,8 @@ class Courses:
         result = db.get_from_db(
             QUERIES.get("PURCHASE_COURSE_UID_CID"), (user_id, course_id)
         )
+        # print("result", result)
+        # return
         if len(result) == 0 or result is None:
             db.insert_into_db(
                 QUERIES.get("INSERT_STUDENT_COURSES"),
@@ -163,3 +167,34 @@ class Courses:
             return PROMPTS.get("COURSE_PURCHASED_SUCESS")
 
         return PROMPTS.get("COURSE_ALREADY_PURCHASED")
+
+
+def list_course_by_role(content, role=None):
+    response = []
+    for val in content:
+        name = val[CourseField.NAME.value]
+        duration = val[CourseField.DURATION.value]
+        price = val[CourseField.PRICE.value]
+        rating = val[CourseField.RATING.value]
+        status = val[CourseField.STATUS.value]
+        approval_status = val[CourseField.APPROVAL_STATUS.value]
+        no_of_students = val[CourseField.NO_OF_STUDENTS.value]
+        earning = no_of_students * price
+
+        return_dict = {
+            "name": name,
+            "duration (in hrs.)": duration,
+            "price (in Rs.)": price,
+            "rating": rating,
+        }
+
+        if role == Roles.ADMIN.value:
+            return_dict["approval_status"] = approval_status
+            return_dict["status"] = status
+
+        elif role == Roles.MENTOR.value:
+            return_dict["no_of_students"] = no_of_students
+            return_dict["earning"] = earning
+
+        response.append(return_dict)
+    return response

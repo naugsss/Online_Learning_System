@@ -8,10 +8,10 @@ from src.helpers.schemas.course_schema import (
     validate_delete_course_schema,
 )
 from src.helpers.schemas.faq_schema import faq_schema
-from src.helpers.setup_logger import log
 from src.helpers.custom_response import get_error_response
 from src.helpers.jwt_helpers import extract_token_data
-from src.controllers.courses import Courses
+from src.controllers.courses import Courses, list_course_by_role
+from src.helpers.setup_logger import InfoLogger
 from src.helpers.validations import (
     check_if_valid_course_name,
     validate_request_data,
@@ -19,9 +19,7 @@ from src.helpers.validations import (
 
 from src.helpers.handle_error_decorator import handle_errors
 from src.helpers.access_decorator import grant_access
-from src.helpers.list_courses import (
-    list_course_by_role,
-)
+
 from src.controllers.feedback import Feedback
 from src.controllers.faq import Faq
 
@@ -36,6 +34,7 @@ QUERIES = sql_queries
 router = APIRouter(prefix="", tags=["courses"])
 course = Courses()
 feedback = Feedback()
+info_logger = InfoLogger()
 
 
 @router.get("/courses")
@@ -47,6 +46,7 @@ def get_courses(request: Request):
     content = course.list_course(4, user_id)
     try:
         if role == Roles.ADMIN.value:
+            info_logger.log("function called admin")
             content = course.list_course(Roles.ADMIN.value, user_id)
             return list_course_by_role(content, Roles.ADMIN.value)
         else:

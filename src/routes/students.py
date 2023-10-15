@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Request
 from src.helpers.handle_error_decorator import handle_errors
 from src.helpers.jwt_helpers import extract_token_data
-from src.controllers.courses import Courses
-from src.helpers.list_courses import list_course_by_role
+from src.controllers.courses import Courses, list_course_by_role
 
 
 router = APIRouter(prefix="", tags=["students"])

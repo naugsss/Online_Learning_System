@@ -13,7 +13,6 @@ def grant_access(fun):
         token = extract_token_data(request=request)
         role = token.get("role")
         operation = fun.__name__
-        print("request" , role, operation)
         if operation in access_control_list.get(str(role)):
             return fun(*args, **kwargs)
         else:

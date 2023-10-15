@@ -22,7 +22,6 @@ class Feedback:
         result = db.get_from_db(QUERIES.get("GET_FROM_COURSE_FEEDBACK"), (course_id,))
         if len(result) != 0:
             return result
-
         return None
 
     def add_course_feedback(self, course_id, rating, comments, user_id):

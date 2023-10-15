@@ -33,6 +33,7 @@ class DatabaseConnection:
             self.cursor.execute(query)
         else:
             self.cursor.execute(query, val)
+
         response = self.cursor.fetchall()
         return response
 
@@ -41,6 +42,7 @@ class DatabaseConnection:
             self.cursor.execute(query)
         else:
             self.cursor.execute(query, val)
+            return self.cursor.lastrowid
 
     def delete_from_db(self, query, val=None):
         if val is None:
