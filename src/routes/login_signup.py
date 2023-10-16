@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import timedelta, datetime
 import jsonschema
 from fastapi.responses import JSONResponse
-from fastapi import APIRouter, Body, HTTPException, Response, status
+from fastapi import APIRouter, Body, Response, status
 from jose import jwt
 from environs import Env
 from src.helpers.handle_error_decorator import handle_errors

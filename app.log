@@ -545,3 +545,202 @@ fastapi.exceptions.HTTPException
 16:59:07,994 src.helpers.handle_error_decorator - ERROR - Error Occurred: purchase_courses Method Error: 
 21:51:36,512 src.helpers.setup_logger - DEBUG - function called admin
 22:41:42,821 src.helpers.setup_logger - DEBUG - function called admin
+15:59:40,921 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 29, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 38, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+15:59:40,921 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:01:19,911 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 29, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 38, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:01:19,911 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:01:36,620 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 29, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 38, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:01:36,620 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:01:53,720 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 30, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 38, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:01:53,720 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:02:15,349 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 31, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 38, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:02:15,349 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:02:38,710 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 32, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 38, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:02:38,710 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:03:00,867 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 32, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 39, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:03:00,867 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:03:13,910 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 32, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 40, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:03:13,910 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:03:28,406 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 32, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 41, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:03:28,406 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:04:05,827 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 32, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 41, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:04:05,828 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:04:06,740 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 32, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 22, in add_mentor
+    is_valid_username = db.get_from_db(
+                        ^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\models\database.py", line 57, in get_from_db
+    self.cursor.execute(query, val)
+  File "C:\Users\anaugaraiya\.virtualenvs\Online_Learning_System_-_Fast-H9MtE_4s\Lib\site-packages\mysql\connector\cursor_cext.py", line 303, in execute
+    self._cnx.handle_unread_result()
+  File "C:\Users\anaugaraiya\.virtualenvs\Online_Learning_System_-_Fast-H9MtE_4s\Lib\site-packages\mysql\connector\connection_cext.py", line 955, in handle_unread_result
+    raise InternalError("Unread result found")
+mysql.connector.errors.InternalError: Unread result found
+
+16:04:06,740 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: Unread result found
+16:04:17,883 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 32, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 22, in add_mentor
+    is_valid_username = db.get_from_db(
+                        ^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\models\database.py", line 57, in get_from_db
+    self.cursor.execute(query, val)
+  File "C:\Users\anaugaraiya\.virtualenvs\Online_Learning_System_-_Fast-H9MtE_4s\Lib\site-packages\mysql\connector\cursor_cext.py", line 303, in execute
+    self._cnx.handle_unread_result()
+  File "C:\Users\anaugaraiya\.virtualenvs\Online_Learning_System_-_Fast-H9MtE_4s\Lib\site-packages\mysql\connector\connection_cext.py", line 955, in handle_unread_result
+    raise InternalError("Unread result found")
+mysql.connector.errors.InternalError: Unread result found
+
+16:04:17,883 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: Unread result found
+16:04:51,48 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 32, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 41, in add_mentor
+    (Roles.MENTOR.value, result[0][3]),
+                         ~~~~~~^^^
+TypeError: 'int' object is not subscriptable
+
+16:04:51,48 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: 'int' object is not subscriptable
+16:06:43,178 src.helpers.handle_error_decorator - DEBUG - Error Occurred: add_new_mentor Method Error: Traceback (most recent call last):
+  File "C:\coding\WG\Online_Learning_System - Fast\src\helpers\handle_error_decorator.py", line 15, in wrapper
+    return_value = function(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\routes\mentors.py", line 32, in add_new_mentor
+    message = mentor.add_mentor(username)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\coding\WG\Online_Learning_System - Fast\src\controllers\mentor.py", line 39, in add_mentor
+    db.update_db(
+  File "C:\coding\WG\Online_Learning_System - Fast\src\models\database.py", line 45, in update_db
+    self.cursor.execute(query, val)
+  File "C:\Users\anaugaraiya\.virtualenvs\Online_Learning_System_-_Fast-H9MtE_4s\Lib\site-packages\mysql\connector\cursor_cext.py", line 303, in execute
+    self._cnx.handle_unread_result()
+  File "C:\Users\anaugaraiya\.virtualenvs\Online_Learning_System_-_Fast-H9MtE_4s\Lib\site-packages\mysql\connector\connection_cext.py", line 955, in handle_unread_result
+    raise InternalError("Unread result found")
+mysql.connector.errors.InternalError: Unread result found
+
+16:06:43,179 src.helpers.handle_error_decorator - ERROR - Error Occurred: add_new_mentor Method Error: Unread result found

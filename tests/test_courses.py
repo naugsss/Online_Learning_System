@@ -208,11 +208,11 @@ class TestCourses(unittest.TestCase):
         ]
         mocked_db_object.get_from_db.return_value = return_value
         course = Courses()
-        response = course.list_course(1, 1)
+        response = course.get_course_list_from_db(1, 1)
         self.assertEqual(response, return_value)
-        response = course.list_course(2, 1)
+        response = course.get_course_list_from_db(2, 1)
         self.assertEqual(response, return_value)
-        response = course.list_course(3, 1)
+        response = course.get_course_list_from_db(3, 1)
         self.assertEqual(response, return_value)
 
     @patch("src.controllers.courses.db")
@@ -220,7 +220,7 @@ class TestCourses(unittest.TestCase):
         return_value = []
         mocked_db_object.get_from_db.return_value = return_value
         course = Courses()
-        response = course.list_course(1, 1)
+        response = course.get_course_list_from_db(1, 1)
         self.assertEqual(response, return_value)
 
     def test_list_course_by_admin_role(self):

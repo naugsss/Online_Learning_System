@@ -43,11 +43,11 @@ def get_courses(request: Request):
     jwt_token_data = extract_token_data(request)
     role = jwt_token_data.get("role")
     user_id = jwt_token_data.get("user_id")
-    content = course.list_course(4, user_id)
+    content = course.get_course_list_from_db(4, user_id)
     try:
         if role == Roles.ADMIN.value:
             info_logger.log("function called admin")
-            content = course.list_course(Roles.ADMIN.value, user_id)
+            content = course.get_course_list_from_db(Roles.ADMIN.value, user_id)
             return list_course_by_role(content, Roles.ADMIN.value)
         else:
             return list_course_by_role(content)
@@ -89,7 +89,7 @@ def approve_courses(request: Request, body=Body()):
         logger.debug(f"not valid approval schema --> {validation_response}")
         return validation_response
 
-    content = course.list_course(1, user_id)
+    content = course.get_course_list_from_db(1, user_id)
     name, course_id = check_if_valid_course_name(
         approval_details.get("course_name"), content
     )
@@ -119,7 +119,7 @@ def delete_courses(request: Request, body=Body()):
         logger.debug(f"not valid delete course schema --> {validation_response}")
         return validation_response
 
-    content = course.list_course(1, user_id)
+    content = course.get_course_list_from_db(1, user_id)
     name, course_id = check_if_valid_course_name(
         delete_course_details.get("course_name"), content
     )
@@ -139,7 +139,7 @@ def purchase_course(request: Request, course_name: str = Path()):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
 
-    content = course.list_course(4, user_id)
+    content = course.get_course_list_from_db(4, user_id)
     name, course_id = check_if_valid_course_name(course_name, content)
     if not name or not course_id:
         return JSONResponse(
@@ -191,7 +191,7 @@ def view_course_feedback(request: Request, course_name: str = Path()):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
 
-    content = course.list_course(4, user_id)
+    content = course.get_course_list_from_db(4, user_id)
     feedback = Feedback()
     name, course_id = check_if_valid_course_name(course_name, content)
     if not name or not course_id:
@@ -221,7 +221,7 @@ def add_course_feedback(request: Request, course_name: str = Path(), body=Body()
     user_id = jwt_token_data.get("user_id")
     user_feedback = body
     course = Courses()
-    content = course.list_course(4, user_id)
+    content = course.get_course_list_from_db(4, user_id)
     validation_response = validate_request_data(user_feedback, feedback_schema)
     if validation_response:
         logger.debug(f"not valid feedback schema --> {validation_response}")
@@ -257,7 +257,7 @@ def view_course_faq(request: Request, course_name: str = Path()):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
     faq = Faq()
-    content = course.list_course(4, user_id)
+    content = course.get_course_list_from_db(4, user_id)
     name, course_id = check_if_valid_course_name(course_name, content)
 
     if not name or not course_id:
@@ -286,7 +286,7 @@ def view_course_faq(request: Request, course_name: str = Path()):
 def add_course_faq(request: Request, course_name: str = Path(), body=Body()):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
-    content = course.list_course(4, user_id)
+    content = course.get_course_list_from_db(4, user_id)
     faq_data = body
     if faq_data is None:
         return JSONResponse(

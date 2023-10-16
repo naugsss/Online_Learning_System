@@ -1,4 +1,7 @@
 {
+  "INSERT_USER_DETAILS": "INSERT INTO users (name, email) VALUES (%s, %s)",
+  "INSERT_USER_ROLES": "INSERT INTO user_roles (uid, role_id) VALUES (%s, %s)",
+  "INSERT_LOGIN_CREDENTIALS": "INSERT INTO authentication (username, password, uid, create_at) VALUES (%s, %s, %s, %s)",
   "GET_NAME": "SELECT name FROM users WHERE id = %s",
   "COURSE_DETAILS": "SELECT price, no_of_students, name, uid FROM courses, mentor_course WHERE courses.id = mentor_course.cid ",
   "GET_COURSES": "SELECT id, name, content, duration, price, avg_rating, approval_status, no_of_students, status, created_at, updated_at FROM courses",
@@ -6,6 +9,7 @@
   "GET_STUDENT_COURSES": "SELECT * FROM courses, student_course WHERE uid = %s and student_course.cid = courses.id",
   "GET_DETAILS_COURSES": "SELECT id, name, content, duration, price, avg_rating, approval_status, no_of_students, status, created_at, updated_at FROM courses WHERE name = %s",
   "GET_COURSES_STATUS": "SELECT id, name, content, duration, price, avg_rating, approval_status, no_of_students, status, created_at, updated_at FROM courses WHERE approval_status = %s and status = %s",
+  "INSERT_INTO_MENTOR_COURSE": "INSERT INTO mentor_course (cid, uid) VALUES (%s, %s)",
   "PURCHASE_COURSE_UID_CID": "SELECT id, uid, cid, purchased_on FROM student_course where uid = %s and cid = %s",
   "INSERT_STUDENT_COURSES": "INSERT INTO student_course (uid, cid, purchased_on) VALUES (%s, %s, %s)",
   "GET_NO_STUDENTS": "SELECT id, name, content, duration, price, avg_rating, approval_status, no_of_students, status, created_at, updated_at from courses where id = %s",

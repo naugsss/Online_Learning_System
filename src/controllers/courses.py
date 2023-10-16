@@ -41,21 +41,21 @@ class Courses:
             date.today(),
             date.today(),
         )
-        course_id = db.get_course_id(QUERIES.get("INSERT_COURSES"), val)
+        course_id = db.insert_into_db(QUERIES.get("INSERT_COURSES"), val)
         db.insert_into_db(
-            "INSERT INTO mentor_course (cid, uid) VALUES (%s, %s)", (course_id, user_id)
+            QUERIES.get("INSERT_INTO_MENTOR_COURSE"), (course_id, user_id)
         )
         return PROMPTS.get("COURSE_APPROVAL_REQUEST")
 
-    def list_course(self, role, user_id):
+    def get_course_list_from_db(self, role, user_id):
         """display all the courses available
 
         Args:
             role (int): Role of the person, can be admin, mentor, student, visitor
-            user_id (_type_): the user id of the logged in user
+            user_id (int): the user id of the logged in user
 
         Returns:
-            _type_: _description_
+            list of tuples: the course list which we fetch from db
         """
         if role == Roles.ADMIN.value:
             query = QUERIES.get("GET_COURSES")
@@ -114,7 +114,6 @@ class Courses:
         """
         query = QUERIES.get("GET_STUDENT_COURSES")
         content = db.get_from_db(query, (user_id,))
-        # print(content)
         return content
 
     def view_course_content(self, course_name):
@@ -142,8 +141,7 @@ class Courses:
         result = db.get_from_db(
             QUERIES.get("PURCHASE_COURSE_UID_CID"), (user_id, course_id)
         )
-        # print("result", result)
-        # return
+
         if len(result) == 0 or result is None:
             db.insert_into_db(
                 QUERIES.get("INSERT_STUDENT_COURSES"),

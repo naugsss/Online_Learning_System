@@ -1,5 +1,5 @@
 import hashlib
-
+from datetime import date
 from src.configurations.config import sql_queries
 from src.models.database import db
 from src.helpers.roles_enum import Roles
@@ -59,15 +59,20 @@ class Login:
         if is_valid_username:
             return None
 
-        self.user_id = db.insert_user_details(
-            self.name, self.email, self.username, self.password
-        )
+        val = (name, email)
+        self.user_id = db.insert_into_db(QUERIES.get("INSERT_USER_DETAILS"), val)
+
+        val = (self.user_id, 4)
+        db.insert_into_db(QUERIES.get("INSERT_USER_ROLES"), val)
+
+        hashed_password = hashlib.sha256(password.encode("utf-8")).hexdigest()
+        val = (username, hashed_password, self.user_id, date.today())
+        db.insert_into_db(QUERIES.get("INSERT_LOGIN_CREDENTIALS"), val)
+
         if self.user_id:
             user_data = self.login_user(username, password)
             if user_data is not None:
-                self.role = user_data[0]
-                self.user_id = user_data[1]
-                return [self.role, self.user_id]
+                return user_data
 
     def validate_credentials(self, username, password):
         """validate credentials against the given username and password
