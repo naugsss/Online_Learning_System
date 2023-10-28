@@ -16,16 +16,12 @@ from src.helpers.validations import (
     check_if_valid_course_name,
     validate_request_data,
 )
-
 from src.helpers.handle_error_decorator import handle_errors
 from src.helpers.access_decorator import grant_access
-
 from src.controllers.feedback import Feedback
 from src.controllers.faq import Faq
-
 from src.models.database import db
 from src.configurations.config import sql_queries
-
 from src.helpers.roles_enum import Roles
 
 
@@ -34,7 +30,7 @@ QUERIES = sql_queries
 router = APIRouter(prefix="", tags=["courses"])
 course = Courses()
 feedback = Feedback()
-info_logger = InfoLogger()
+info_logger = InfoLogger(logger)
 
 
 @router.get("/courses")

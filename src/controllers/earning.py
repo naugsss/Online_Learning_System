@@ -1,3 +1,4 @@
+from src.helpers.exceptions import BadRequestException
 from src.models.database import db
 from src.configurations.config import sql_queries
 
@@ -27,7 +28,7 @@ class Earning:
                 name = db.get_from_db(QUERIES.get("GET_NAME"), (user_id,))
                 values.append([name[0][0], row[2], row[0] * row[1]])
             return values
-        return None
+        return BadRequestException
 
     def list_mentor_earning(self, user_id=None):
         """This will return the earning in a proper dictionary format"""

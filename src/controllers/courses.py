@@ -2,6 +2,7 @@
 from datetime import date
 from src.controllers.auth import Login
 from src.helpers.course_enum import CourseField
+from src.helpers.exceptions import DbException, NotFoundException
 from src.models.database import db
 from src.configurations.config import sql_queries, prompts
 from src.helpers.roles_enum import Roles
@@ -42,10 +43,13 @@ class Courses:
             date.today(),
         )
         course_id = db.insert_into_db(QUERIES.get("INSERT_COURSES"), val)
-        db.insert_into_db(
-            QUERIES.get("INSERT_INTO_MENTOR_COURSE"), (course_id, user_id)
-        )
-        return PROMPTS.get("COURSE_APPROVAL_REQUEST")
+        try:
+            db.insert_into_db(
+                QUERIES.get("INSERT_INTO_MENTOR_COURSE"), (course_id, user_id)
+            )
+            return PROMPTS.get("COURSE_APPROVAL_REQUEST")
+        except:
+            raise DbException
 
     def get_course_list_from_db(self, role, user_id):
         """display all the courses available
@@ -80,8 +84,11 @@ class Courses:
         Returns:
             string: message indicating deactivation
         """
-        db.update_db(QUERIES.get("UPDATE_COURSE_STATUS"), ("deactive", course_name))
-        return PROMPTS.get("COURSE_DEACTIVATED")
+        try:
+            db.update_db(QUERIES.get("UPDATE_COURSE_STATUS"), ("deactive", course_name))
+            return PROMPTS.get("COURSE_DEACTIVATED")
+        except:
+            raise NotFoundException
 
     def approve_course(self, course_id, approval_status):
         """approve a course
@@ -98,10 +105,12 @@ class Courses:
                 QUERIES.get("UPDATE_PENDING_APPROVAL_STATUS"), ("approved", course_id)
             )
             return PROMPTS.get("COURSE_APPROVED")
-
-        db.delete_from_db(QUERIES.get("DELETE_FROM_MENTOR_COURSE"), (course_id,))
-        db.delete_from_db(QUERIES.get("DELETE_FROM_COURSES"), (course_id,))
-        return PROMPTS.get("COURSE_REJECTED")
+        try:
+            db.delete_from_db(QUERIES.get("DELETE_FROM_MENTOR_COURSE"), (course_id,))
+            db.delete_from_db(QUERIES.get("DELETE_FROM_COURSES"), (course_id,))
+            return PROMPTS.get("COURSE_REJECTED")
+        except:
+            raise DbException
 
     def view_purchased_course(self, user_id):
         """view list of purchased courses
@@ -112,9 +121,12 @@ class Courses:
         Returns:
             string:  list of purchased courses
         """
-        query = QUERIES.get("GET_STUDENT_COURSES")
-        content = db.get_from_db(query, (user_id,))
-        return content
+        try:
+            query = QUERIES.get("GET_STUDENT_COURSES")
+            content = db.get_from_db(query, (user_id,))
+            return content
+        except:
+            raise NotFoundException
 
     def view_course_content(self, course_name):
         """view the content of the course
@@ -125,8 +137,11 @@ class Courses:
         Returns:
             string: content of the course
         """
-        result = db.get_from_db(QUERIES.get("GET_DETAILS_COURSES"), (course_name,))
-        return result[0][2]
+        try:
+            result = db.get_from_db(QUERIES.get("GET_DETAILS_COURSES"), (course_name,))
+            return result[0][2]
+        except:
+            raise DbException
 
     def purchase_course(self, user_id, course_id):
         """purchase a course
@@ -159,7 +174,7 @@ class Courses:
                     (updated_no_of_student, course_id),
                 )
             else:
-                return PROMPTS.get("PURCHASE_ERROR")
+                raise NotFoundException(PROMPTS.get("PURCHASE_ERROR"))
 
             Login.update_role(user_id)
             return PROMPTS.get("COURSE_PURCHASED_SUCESS")

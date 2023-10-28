@@ -1,6 +1,4 @@
 import os
-import hashlib
-from datetime import date
 from dotenv import load_dotenv
 import mysql.connector
 
@@ -33,7 +31,7 @@ class DatabaseConnection:
             self.cursor.execute(query)
             user_id = self.cursor.lastrowid
             return user_id
-        
+
         self.cursor.execute(query, val)
         user_id = self.cursor.lastrowid
         return user_id

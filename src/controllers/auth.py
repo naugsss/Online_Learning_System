@@ -1,6 +1,7 @@
 import hashlib
 from datetime import date
 from src.configurations.config import sql_queries
+from src.helpers.exceptions import LoginError
 from src.models.database import db
 from src.helpers.roles_enum import Roles
 
@@ -33,7 +34,7 @@ class Login:
             self.role = user_data[0]
             self.user_id = user_data[1]
             return [self.role, self.user_id]
-        return None
+        raise LoginError("Invalid Credentials")
 
     def sign_up(self, name, email, username, password):
         """user sign up with his details
@@ -73,6 +74,7 @@ class Login:
             user_data = self.login_user(username, password)
             if user_data is not None:
                 return user_data
+        
 
     def validate_credentials(self, username, password):
         """validate credentials against the given username and password

@@ -1,4 +1,5 @@
 from src.controllers.courses import Courses
+from src.helpers.exceptions import BadRequestException, NotFoundException
 from src.models.database import db
 from src.configurations.config import sql_queries, prompts
 
@@ -18,9 +19,10 @@ class Faq:
         Returns:
             string: faq of the course if exsits.
         """
+
         result = db.get_from_db(QUERIES.get("GET_FAQ"), (course_name,))
         if result is None or len(result) == 0:
-            return None
+            raise NotFoundException
 
         return result
 
@@ -44,4 +46,4 @@ class Faq:
                 db.insert_into_db(QUERIES.get("INSERT_FAQ"), (row[3], question, answer))
                 return PROMPTS.get("FAQ_ADDED_SUCESS")
         if not is_valid_input:
-            return PROMPTS.get("NO_SUCH_COURSE")
+            return NotFoundException(PROMPTS.get("NO_SUCH_COURSE"))

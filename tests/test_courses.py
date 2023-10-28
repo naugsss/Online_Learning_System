@@ -1,8 +1,7 @@
 import datetime
 import unittest
-from datetime import date
 from unittest import mock
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 from src.controllers.courses import (
     Courses,
     list_course_by_role,

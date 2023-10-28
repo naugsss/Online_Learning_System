@@ -7,8 +7,6 @@ sql_queries = None
 def load_configuration():
     with open("src/configurations/config.json", "r") as fp:
         config = json.load(fp)
-        prompts_path = config.get("prompts_path")
-        sql_queries_path = config.get("sql_queries_path")
         access_control_list = config.get("access_control_list")
         sql_queries = get_sql_queries()
         prompts = get_prompts()
