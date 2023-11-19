@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from src.helpers.custom_response import get_error_response
 from src.helpers.jwt_helpers import extract_token_data
 from src.configurations.config import access_control_list
+from src.helpers.roles_enum import Roles
 
 
 def grant_access(fun):
@@ -13,7 +14,7 @@ def grant_access(fun):
         token = extract_token_data(request=request)
         role = token.get("role")
         operation = fun.__name__
-        if operation in access_control_list.get(str(role)):
+        if operation in access_control_list.get(str(Roles(role).name)):
             return fun(*args, **kwargs)
         else:
             return JSONResponse(
