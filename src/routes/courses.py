@@ -76,20 +76,23 @@ def add_course(request: Request, body=Body()):
 @grant_access
 @handle_errors
 def approve_courses(request: Request, body=Body()):
+    print("inside approve_courses")
+
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
     approval_details = body
     validation_response = validate_request_data(approval_details, approval_schema)
-
+    print(approval_details)
     if validation_response:
         logger.debug(f"not valid approval schema --> {validation_response}")
         return validation_response
 
     content = course.get_course_list_from_db(1, user_id)
+    # print(content)
     name, course_id = check_if_valid_course_name(
         approval_details.get("course_name"), content
     )
-
+    # print(name, course_id, content)
     if not name or not course_id:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -115,7 +118,7 @@ def delete_courses(request: Request, body=Body()):
         logger.debug(f"not valid delete course schema --> {validation_response}")
         return validation_response
 
-    content = course.get_course_list_from_db(1, user_id)
+    content = course.get_course_list_from_db(4, user_id)
     name, course_id = check_if_valid_course_name(
         delete_course_details.get("course_name"), content
     )
@@ -125,8 +128,10 @@ def delete_courses(request: Request, body=Body()):
             status_code=status.HTTP_404_NOT_FOUND,
             content=get_error_response(404, "No such course exists"),
         )
-    course.delete_course(delete_course_details.get("name"))
-    return {"message": "course marked as deactivated successfully."}
+    # print(name, course_id)
+    message = course.delete_course(delete_course_details.get("name"))
+    return {"message": message}
+    # return message
 
 
 @router.post("/courses/{course_name}")

@@ -2,6 +2,8 @@ import os
 from dotenv import load_dotenv
 import mysql.connector
 
+from src.helpers.exceptions import DbException
+
 load_dotenv()
 
 
@@ -26,39 +28,39 @@ class DatabaseConnection:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.db.close()
 
-    def insert_into_db(self, query, val=None):
-        if val is None:
-            self.cursor.execute(query)
+    def insert_into_db(self, query, val):
+        try:
+            self.cursor.execute(query, val)
             user_id = self.cursor.lastrowid
             return user_id
+        except:
+            raise DbException
 
-        self.cursor.execute(query, val)
-        user_id = self.cursor.lastrowid
-        return user_id
-
-    def update_db(self, query, val=None):
-        if val is None:
-            self.cursor.execute(query)
-        else:
+    def update_db(self, query, val):
+        try:
             self.cursor.execute(query, val)
             return self.cursor.lastrowid
+        except:
+            raise DbException
 
-    def delete_from_db(self, query, val=None):
-        if val is None:
-            self.cursor.execute(query)
-        else:
+    def delete_from_db(self, query, val):
+        try:
             self.cursor.execute(query, val)
+        except:
+            raise DbException
 
     def get_from_db(self, query, val=None):
-        if val is None:
-            self.cursor.execute(query)
-        else:
-            self.cursor.execute(query, val)
-        response = self.cursor.fetchall()
-        return response
+        try:
+            if val is None:
+                self.cursor.execute(query)
+                response = self.cursor.fetchall()
+                return response
+            else:
+                self.cursor.execute(query, val)
+            response = self.cursor.fetchall()
+            return response
+        except:
+            raise DbException
 
 
-try:
-    db = DatabaseConnection()
-except:
-    raise ValueError
+db = DatabaseConnection()

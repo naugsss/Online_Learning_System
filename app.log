@@ -750,3 +750,12 @@ mysql.connector.errors.InternalError: Unread result found
 12:17:57,569 src.helpers.handle_error_decorator - ERROR - Invalid Credentials
 12:17:59,202 src.helpers.handle_error_decorator - ERROR - Invalid Credentials
 12:46:29,74 src.helpers.handle_error_decorator - ERROR - 
+18:47:02,46 src.helpers.setup_logger - INFO - function called admin
+18:56:15,419 src.helpers.handle_error_decorator - ERROR - Invalid Credentials
+19:41:14,75 src.helpers.setup_logger - INFO - function called admin
+20:02:20,533 src.helpers.handle_error_decorator - ERROR - 
+20:02:38,660 src.helpers.handle_error_decorator - ERROR - 
+20:03:49,471 src.helpers.handle_error_decorator - ERROR - 
+20:04:01,172 src.helpers.handle_error_decorator - ERROR - 
+20:09:56,503 src.helpers.handle_error_decorator - ERROR - 
+20:10:37,931 src.helpers.handle_error_decorator - ERROR - 

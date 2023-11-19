@@ -19,12 +19,15 @@ class Faq:
         Returns:
             string: faq of the course if exsits.
         """
+        try:
+            result = db.get_from_db(QUERIES.get("GET_FAQ"), (course_name,))
 
-        result = db.get_from_db(QUERIES.get("GET_FAQ"), (course_name,))
-        if result is None or len(result) == 0:
-            raise NotFoundException
-
-        return result
+            if len(result) != 0:
+                return result
+            else:
+                return QUERIES.get("NO_FAQ")
+        except:
+            raise BadRequestException
 
     def add_faq(self, content, question, answer, course_name):
         """add a faq for a given course
@@ -38,12 +41,17 @@ class Faq:
         Returns:
             string: custom message, whether faq added or course does not exist
         """
-        is_valid_input = False
-        for row in content:
-            if row[4].lower() == course_name.lower():
-                is_valid_input = True
+        try:
+            is_valid_input = False
+            for row in content:
+                if row[4].lower() == course_name.lower():
+                    is_valid_input = True
 
-                db.insert_into_db(QUERIES.get("INSERT_FAQ"), (row[3], question, answer))
-                return PROMPTS.get("FAQ_ADDED_SUCESS")
-        if not is_valid_input:
-            return NotFoundException(PROMPTS.get("NO_SUCH_COURSE"))
+                    db.insert_into_db(
+                        QUERIES.get("INSERT_FAQ"), (row[3], question, answer)
+                    )
+                    return PROMPTS.get("FAQ_ADDED_SUCESS")
+            if not is_valid_input:
+                return NotFoundException(PROMPTS.get("NO_SUCH_COURSE"))
+        except:
+            raise BadRequestException

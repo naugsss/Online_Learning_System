@@ -7,7 +7,6 @@ class NoSuchUserError(LookupError):
     """Raised when a user is not found"""
 
 
-
 class LoginError(LookupError):
     """Raised when an error occurs at time of login"""
 
@@ -21,7 +20,7 @@ class DbException(Exception):
 
 
 class NotFoundException(Exception):
-    """Raised when something us not found"""
+    """Raised when something is not found"""
 
 
 class BadRequestException(Exception):

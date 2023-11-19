@@ -43,13 +43,12 @@ class Courses:
             date.today(),
         )
         course_id = db.insert_into_db(QUERIES.get("INSERT_COURSES"), val)
-        try:
+        if course_id:
             db.insert_into_db(
                 QUERIES.get("INSERT_INTO_MENTOR_COURSE"), (course_id, user_id)
             )
             return PROMPTS.get("COURSE_APPROVAL_REQUEST")
-        except:
-            raise DbException
+        raise DbException
 
     def get_course_list_from_db(self, role, user_id):
         """display all the courses available
@@ -75,6 +74,8 @@ class Courses:
             content = db.get_from_db(QUERIES.get("GET_MENTOR_COURSE"), (user_id,))
             return content
 
+        raise NotFoundException
+
     def delete_course(self, course_name):
         """admin can deactivate a course
 
@@ -85,7 +86,10 @@ class Courses:
             string: message indicating deactivation
         """
         try:
-            db.update_db(QUERIES.get("UPDATE_COURSE_STATUS"), ("deactive", course_name))
+            response = db.update_db(
+                QUERIES.get("UPDATE_COURSE_STATUS"), ("deactive", course_name)
+            )
+
             return PROMPTS.get("COURSE_DEACTIVATED")
         except:
             raise NotFoundException
@@ -100,12 +104,15 @@ class Courses:
         Returns:
             Course Status (string): whether course has been approved or rejected.
         """
-        if approval_status == "approve":
-            db.update_db(
-                QUERIES.get("UPDATE_PENDING_APPROVAL_STATUS"), ("approved", course_id)
-            )
-            return PROMPTS.get("COURSE_APPROVED")
         try:
+            if approval_status == "approve":
+                response = db.update_db(
+                    QUERIES.get("UPDATE_PENDING_APPROVAL_STATUS"),
+                    ("approved", course_id),
+                )
+
+                return PROMPTS.get("COURSE_APPROVED")
+
             db.delete_from_db(QUERIES.get("DELETE_FROM_MENTOR_COURSE"), (course_id,))
             db.delete_from_db(QUERIES.get("DELETE_FROM_COURSES"), (course_id,))
             return PROMPTS.get("COURSE_REJECTED")
@@ -123,8 +130,8 @@ class Courses:
         """
         try:
             query = QUERIES.get("GET_STUDENT_COURSES")
-            content = db.get_from_db(query, (user_id,))
-            return content
+            course_list = db.get_from_db(query, (user_id,))
+            return course_list
         except:
             raise NotFoundException
 
@@ -138,10 +145,10 @@ class Courses:
             string: content of the course
         """
         try:
-            result = db.get_from_db(QUERIES.get("GET_DETAILS_COURSES"), (course_name,))
-            return result[0][2]
+            content = db.get_from_db(QUERIES.get("GET_DETAILS_COURSES"), (course_name,))
+            return content[0][2]
         except:
-            raise DbException
+            raise NotFoundException
 
     def purchase_course(self, user_id, course_id):
         """purchase a course

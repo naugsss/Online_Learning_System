@@ -20,10 +20,15 @@ class Feedback:
         Returns:
             string: feedback for a given course if exists, or none.
         """
-        result = db.get_from_db(QUERIES.get("GET_FROM_COURSE_FEEDBACK"), (course_id,))
-        if len(result) != 0:
-            return result
-        raise BadRequestException
+        try:
+            result = db.get_from_db(QUERIES.get("GET_FROM_COURSE_FEEDBACK"), (course_id,))
+
+            if len(result) != 0:
+                return result
+            else:
+                return QUERIES.get("NO_FEEDBACK")
+        except:
+            raise BadRequestException
 
     def add_course_feedback(self, course_id, rating, comments, user_id):
         """adding feedback for a given course, only if the user has purchased the course
