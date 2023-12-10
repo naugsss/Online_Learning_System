@@ -40,11 +40,17 @@ def register_user(user_data=Body()):
         user_data["password"],
     )
     if is_valid is not None:
-        user_data = {"role": is_valid[0], "user_id": is_valid[1]}
-        create_access_token(user_data, timedelta(minutes=60))
+        user_data = {
+            "role": is_valid[0],
+            "user_id": is_valid[1],
+            "username": user_data["username"],
+        }
+        access_token = create_access_token(user_data, timedelta(minutes=60))
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content=get_success_response(200, "Account created successfully"),
+            content=get_success_response(
+                200, "Account created successfully", access_token
+            ),
         )
     else:
         return JSONResponse(
@@ -65,10 +71,16 @@ def login_user(response: Response, user_credentials=Body()):
         username=user_credentials["username"], password=user_credentials["password"]
     )
     if is_authenticated is not None:
-        user_data = {"role": is_authenticated[0], "user_id": is_authenticated[1]}
+        user_data = {
+            "username": user_credentials.get("username"),
+            "role": is_authenticated[0],
+            "user_id": is_authenticated[1],
+        }
         access_token = create_access_token(user_data, timedelta(minutes=60))
-        response.set_cookie(key="access_token", value=access_token, httponly=True)
-        return get_success_response(200, "Login Successfully")
+        # response.set_cookie(key="access_token", value=access_token, httponly=True)
+
+        # return get_success_response(200, "Login Successfully", access_token)
+        return {"access_token": access_token, "token_type": "bearer"}
 
     else:
         return JSONResponse(
@@ -79,15 +91,17 @@ def login_user(response: Response, user_credentials=Body()):
 
 def create_access_token(user_data: dict, expires_delta: Optional[timedelta] = None):
     """Create a new access token for the given user"""
-    print("user_data", user_data)
+    # print("encoded")
     encode = {
         "user_id": user_data.get("user_id"),
         "role": user_data.get("role"),
+        "username": user_data.get("username"),
     }
-
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     encode.update({"exp": expire})
-    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORTIHM)
+    val = jwt.encode(encode, SECRET_KEY, algorithm=ALGORTIHM)
+
+    return val

@@ -203,8 +203,8 @@ def list_course_by_role(content, role=None):
 
         return_dict = {
             "name": name,
-            "duration (in hrs.)": duration,
-            "price (in Rs.)": price,
+            "duration": duration,
+            "price": price,
             "rating": rating,
         }
 

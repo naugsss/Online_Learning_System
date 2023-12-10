@@ -12,7 +12,8 @@ ALGORTIHM = os.getenv("ALGORITHM")
 
 def extract_token_data(request: Request):
     try:
-        token = request.cookies.get("access_token")
+        token = request.headers.get("Authorization").split(" ")[1]
+
         if token is None:
             return None
 

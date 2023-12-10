@@ -76,8 +76,6 @@ def add_course(request: Request, body=Body()):
 @grant_access
 @handle_errors
 def approve_courses(request: Request, body=Body()):
-    print("inside approve_courses")
-
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
     approval_details = body
