@@ -12,6 +12,7 @@ def grant_access(fun):
     def wrapper(*args, **kwargs):
         request = kwargs.get("request")
         token = extract_token_data(request=request)
+
         role = token.get("role")
         operation = fun.__name__
         if operation in access_control_list.get(str(Roles(role).name)):

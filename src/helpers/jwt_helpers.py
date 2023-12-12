@@ -13,8 +13,7 @@ ALGORTIHM = os.getenv("ALGORITHM")
 def extract_token_data(request: Request):
     try:
         token = request.headers.get("Authorization").split(" ")[1]
-
-        if token is None:
+        if not token:
             return None
 
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORTIHM])
@@ -27,4 +26,7 @@ def extract_token_data(request: Request):
         }
 
     except JWTError as error:
-        raise HTTPException(status_code=404, detail=str(error))
+        return None
+    except Exception as error:
+        return None
+        raise HTTPException(status_code=404, detail=str(error))  # Unexpected errors

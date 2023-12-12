@@ -1,6 +1,7 @@
 import logging
 from fastapi import APIRouter, Body, Request, status, Path
 from fastapi.responses import JSONResponse
+from typing import Optional
 from src.helpers.schemas.feedback_schema import feedback_schema
 from src.helpers.schemas.course_schema import (
     course_schema,
@@ -33,22 +34,60 @@ feedback = Feedback()
 info_logger = InfoLogger(logger)
 
 
+# @router.get("/courses")
+# @handle_errors
+# def get_courses(request: Request):
+#     jwt_token_data = extract_token_data(request)
+#     role = jwt_token_data.get("role")
+#     user_id = jwt_token_data.get("user_id")
+#     content = course.get_course_list_from_db(4, user_id)
+#     try:
+#         if role == Roles.ADMIN.value:
+#             info_logger.log("function called admin")
+#             content = course.get_course_list_from_db(Roles.ADMIN.value, user_id)
+#             return list_course_by_role(content, Roles.ADMIN.value)
+#         else:
+#             return list_course_by_role(content)
+#     except Exception as e:
+#         return e
+
+
 @router.get("/courses")
 @handle_errors
-def get_courses(request: Request):
+def get_courses(request: Request, page=None, size=None):
     jwt_token_data = extract_token_data(request)
+
+    if jwt_token_data == None:
+        content = course.get_course_list_from_db(role=4, page=1, size=3)
+        return list_course_by_role(content)
+
     role = jwt_token_data.get("role")
     user_id = jwt_token_data.get("user_id")
-    content = course.get_course_list_from_db(4, user_id)
-    try:
-        if role == Roles.ADMIN.value:
-            info_logger.log("function called admin")
-            content = course.get_course_list_from_db(Roles.ADMIN.value, user_id)
-            return list_course_by_role(content, Roles.ADMIN.value)
-        else:
-            return list_course_by_role(content)
-    except Exception as e:
-        return e
+
+    if page is not None:
+        try:
+            page = int(page)
+        except ValueError:
+            raise ValueError(400, "Invalid page parameter")
+    if size is not None:
+        try:
+            size = int(size)
+        except ValueError:
+            raise ValueError(400, "Invalid size parameter")
+
+    content = course.get_course_list_from_db(4, user_id, page, size)
+
+    if role == Roles.ADMIN.value:
+        info_logger.log("function called admin")
+        print("admin")
+        content, total_count = course.get_course_list_from_db(
+            Roles.ADMIN.value, user_id, page, size
+        )
+        print("content")
+
+        return list_course_by_role(content, Roles.ADMIN.value)
+    else:
+        return list_course_by_role(content)
 
 
 @router.post("/courses")
@@ -79,6 +118,7 @@ def approve_courses(request: Request, body=Body()):
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
     approval_details = body
+
     validation_response = validate_request_data(approval_details, approval_schema)
     print(approval_details)
     if validation_response:
@@ -86,7 +126,7 @@ def approve_courses(request: Request, body=Body()):
         return validation_response
 
     content = course.get_course_list_from_db(1, user_id)
-    # print(content)
+    print(content)
     name, course_id = check_if_valid_course_name(
         approval_details.get("course_name"), content
     )
@@ -188,6 +228,7 @@ def view_course_content(request: Request, course_name: str = Path()):
 @handle_errors
 def view_course_feedback(request: Request, course_name: str = Path()):
     jwt_token_data = extract_token_data(request)
+
     user_id = jwt_token_data.get("user_id")
 
     content = course.get_course_list_from_db(4, user_id)

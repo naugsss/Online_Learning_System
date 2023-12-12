@@ -6,6 +6,7 @@ from src.helpers.exceptions import DbException, NotFoundException
 from src.models.database import db
 from src.configurations.config import sql_queries, prompts
 from src.helpers.roles_enum import Roles
+from typing import Optional
 
 QUERIES = sql_queries
 PROMPTS = prompts
@@ -50,31 +51,51 @@ class Courses:
             return PROMPTS.get("COURSE_APPROVAL_REQUEST")
         raise DbException
 
-    def get_course_list_from_db(self, role, user_id):
-        """display all the courses available
+    # def get_course_list_from_db(self, role, user_id):
+    #     """display all the courses available
 
-        Args:
-            role (int): Role of the person, can be admin, mentor, student, visitor
-            user_id (int): the user id of the logged in user
+    #     Args:
+    #         role (int): Role of the person, can be admin, mentor, student, visitor
+    #         user_id (int): the user id of the logged in user
 
-        Returns:
-            list of tuples: the course list which we fetch from db
-        """
+    #     Returns:
+    #         list of tuples: the course list which we fetch from db
+    #     """
+    #     if role == Roles.ADMIN.value:
+    #         query = QUERIES.get("GET_COURSES")
+    #         content = db.get_from_db(query)
+    #         return content
+
+    #     if role == Roles.STUDENT.value or role == Roles.VISITOR.value:
+    #         query = QUERIES.get("GET_COURSES_STATUS")
+    #         content = db.get_from_db(query, ("approved", "active"))
+    #         return content
+
+    #     if role == Roles.MENTOR.value:
+    #         content = db.get_from_db(QUERIES.get("GET_MENTOR_COURSE"), (user_id,))
+    #         return content
+
+    #     raise NotFoundException
+
+    def get_course_list_from_db(self, role, user_id=None, page=None, size=None):
         if role == Roles.ADMIN.value:
             query = QUERIES.get("GET_COURSES")
-            content = db.get_from_db(query)
-            return content
+            content = db.get_paginated(query, val=None, page=page, size=size)
 
-        if role == Roles.STUDENT.value or role == Roles.VISITOR.value:
+        elif role == Roles.STUDENT.value or role == Roles.VISITOR.value:
             query = QUERIES.get("GET_COURSES_STATUS")
-            content = db.get_from_db(query, ("approved", "active"))
-            return content
+            content, total_count = db.get_paginated(
+                query, ("approved", "active"), page=page, size=size
+            )
+        elif role == Roles.MENTOR.value:
+            query = QUERIES.get("GET_MENTOR_COURSE")
+            content, total_count = db.get_paginated(
+                query, (user_id,), page=page, size=size
+            )
+        else:
+            raise NotFoundException
 
-        if role == Roles.MENTOR.value:
-            content = db.get_from_db(QUERIES.get("GET_MENTOR_COURSE"), (user_id,))
-            return content
-
-        raise NotFoundException
+        return content
 
     def delete_course(self, course_name):
         """admin can deactivate a course
@@ -190,6 +211,7 @@ class Courses:
 
 
 def list_course_by_role(content, role=None):
+    print(content)
     response = []
     for val in content:
         name = val[CourseField.NAME.value]
@@ -217,4 +239,5 @@ def list_course_by_role(content, role=None):
             return_dict["earning"] = earning
 
         response.append(return_dict)
+
     return response
