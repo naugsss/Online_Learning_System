@@ -1,6 +1,6 @@
 from src.controllers.courses import Courses
 from src.helpers.exceptions import BadRequestException, NotFoundException
-from src.models.database import db
+from src.models.database import DatabaseConnection, db
 from src.configurations.config import sql_queries, prompts
 
 PROMPTS = prompts
@@ -20,6 +20,7 @@ class Faq:
             string: faq of the course if exsits.
         """
         try:
+            db = DatabaseConnection()
             result = db.get_from_db(QUERIES.get("GET_FAQ"), (course_name,))
 
             if len(result) != 0:

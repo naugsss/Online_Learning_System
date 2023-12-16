@@ -58,12 +58,11 @@ def get_courses(request: Request, page=None, size=None):
     jwt_token_data = extract_token_data(request)
 
     if jwt_token_data == None:
-        content = course.get_course_list_from_db(role=4, page=1, size=3)
+        content, total_count = course.get_course_list_from_db(role=4, page=1, size=4)
         return list_course_by_role(content)
 
     role = jwt_token_data.get("role")
     user_id = jwt_token_data.get("user_id")
-
     if page is not None:
         try:
             page = int(page)
@@ -75,7 +74,7 @@ def get_courses(request: Request, page=None, size=None):
         except ValueError:
             raise ValueError(400, "Invalid size parameter")
 
-    content = course.get_course_list_from_db(4, user_id, page, size)
+    content, total_count = course.get_course_list_from_db(4, user_id, page, size)
 
     if role == Roles.ADMIN.value:
         info_logger.log("function called admin")

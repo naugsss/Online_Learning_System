@@ -20,7 +20,9 @@ logger = logging.getLogger(__name__)
 @handle_errors
 def add_new_mentor(request: Request, body=Body()):
     """Add a new mentor"""
+    print("add_new_mentor")
     mentor_data = body
+    print(mentor_data)
     validation_response = validate_request_data(mentor_data, mentor_schema)
     if validation_response:
         return validation_response

@@ -3,7 +3,7 @@ from datetime import date
 from src.controllers.auth import Login
 from src.helpers.course_enum import CourseField
 from src.helpers.exceptions import DbException, NotFoundException
-from src.models.database import db
+from src.models.database import DatabaseConnection, db
 from src.configurations.config import sql_queries, prompts
 from src.helpers.roles_enum import Roles
 from typing import Optional
@@ -78,20 +78,20 @@ class Courses:
     #     raise NotFoundException
 
     def get_course_list_from_db(self, role, user_id=None, page=None, size=None):
+        db = DatabaseConnection()
         if role == Roles.ADMIN.value:
             query = QUERIES.get("GET_COURSES")
             content = db.get_paginated(query, val=None, page=page, size=size)
 
         elif role == Roles.STUDENT.value or role == Roles.VISITOR.value:
             query = QUERIES.get("GET_COURSES_STATUS")
-            content, total_count = db.get_paginated(
+            content = db.get_paginated(
                 query, ("approved", "active"), page=page, size=size
             )
+
         elif role == Roles.MENTOR.value:
             query = QUERIES.get("GET_MENTOR_COURSE")
-            content, total_count = db.get_paginated(
-                query, (user_id,), page=page, size=size
-            )
+            content = db.get_paginated(query, (user_id,), page=page, size=size)
         else:
             raise NotFoundException
 
@@ -211,7 +211,6 @@ class Courses:
 
 
 def list_course_by_role(content, role=None):
-    print(content)
     response = []
     for val in content:
         name = val[CourseField.NAME.value]
