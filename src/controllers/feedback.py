@@ -21,7 +21,9 @@ class Feedback:
             string: feedback for a given course if exists, or none.
         """
         try:
-            result = db.get_from_db(QUERIES.get("GET_FROM_COURSE_FEEDBACK"), (course_id,))
+            result = db.get_from_db(
+                QUERIES.get("GET_FROM_COURSE_FEEDBACK"), (course_id,)
+            )
 
             if len(result) != 0:
                 return result
@@ -44,6 +46,13 @@ class Feedback:
         """
         try:
             val = (course_id, user_id, rating, comments, date.today())
+            is_feedback_added = db.get_from_db(
+                QUERIES.get("IF_ALREADY_ADDED_FEEDBACK"), (course_id, user_id)
+            )
+
+            if is_feedback_added is not None:
+                return PROMPTS.get("ALREADY_ADDED_FEEDBACK")
+
             db.insert_into_db(QUERIES.get("INSERT_INTO_COURSE_FEEDBACK"), val)
 
             ratings = db.get_from_db(

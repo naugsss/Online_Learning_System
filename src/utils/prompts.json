@@ -12,6 +12,7 @@
     "FAQ_ADDED_SUCESS": "FAQ added successfully",
     "NO_FAQ": "No FAQ exists for this course",
     "FEEDBACK_ADDED_SUCESS": "Feedback added successfully",
+    "ALREADY_ADDED_FEEDBACK":"You've already added a feedback to this course",
     "NO_FEEDBACK": "No feedback exists for this course",
     "ALREADY_A_MENTOR": "This person is already a mentor",
     "MENTOR_ADDED_SUCESS": "Mentor added successfully",

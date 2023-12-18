@@ -16,23 +16,31 @@ class Earning:
         Returns:
             int/None: returns the total earning of a mentor from his course otherwise None.
         """
+        is_user_id = False
         if user_id is None:
+            is_user_id = True
             result = db.get_from_db(QUERIES.get("COURSE_DETAILS"))
         else:
+            print("this function called")
             result = db.get_from_db(QUERIES.get("GET_EARNING_DATA"), (user_id,))
         if result is not None:
             values = []
             for row in result:
                 if user_id is None:
                     user_id = row[3]
+
                 name = db.get_from_db(QUERIES.get("GET_NAME"), (user_id,))
                 values.append([name[0][0], row[2], row[0] * row[1]])
+                print(values)
+                if is_user_id is True:
+                    user_id = None
             return values
         return BadRequestException
 
     def list_mentor_earning(self, user_id=None):
         """This will return the earning in a proper dictionary format"""
-
+        print("user_id")
+        print(user_id)
         if user_id is None:
             earning = self.calculate_mentor_earning()
         else:

@@ -6,7 +6,6 @@ from src.helpers.exceptions import DbException, NotFoundException
 from src.models.database import DatabaseConnection, db
 from src.configurations.config import sql_queries, prompts
 from src.helpers.roles_enum import Roles
-from typing import Optional
 
 QUERIES = sql_queries
 PROMPTS = prompts
@@ -125,6 +124,8 @@ class Courses:
         Returns:
             Course Status (string): whether course has been approved or rejected.
         """
+        print("inside approve course")
+        print(course_id, approval_status)
         try:
             if approval_status == "approve":
                 response = db.update_db(
@@ -135,6 +136,7 @@ class Courses:
                 return PROMPTS.get("COURSE_APPROVED")
 
             db.delete_from_db(QUERIES.get("DELETE_FROM_MENTOR_COURSE"), (course_id,))
+            db.delete_from_db(QUERIES.get("DELETE_FROM_COURSE_FAQ"), (course_id,))
             db.delete_from_db(QUERIES.get("DELETE_FROM_COURSES"), (course_id,))
             return PROMPTS.get("COURSE_REJECTED")
         except:

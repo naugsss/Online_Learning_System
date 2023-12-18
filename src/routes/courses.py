@@ -117,18 +117,18 @@ def approve_courses(request: Request, body=Body()):
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
     approval_details = body
-
-    validation_response = validate_request_data(approval_details, approval_schema)
     print(approval_details)
+    validation_response = validate_request_data(approval_details, approval_schema)
+    print("validation_response")
     if validation_response:
         logger.debug(f"not valid approval schema --> {validation_response}")
         return validation_response
 
     content = course.get_course_list_from_db(1, user_id)
-    print(content)
     name, course_id = check_if_valid_course_name(
         approval_details.get("course_name"), content
     )
+    print("content")
     # print(name, course_id, content)
     if not name or not course_id:
         return JSONResponse(
@@ -140,35 +140,23 @@ def approve_courses(request: Request, body=Body()):
     return {"message": message}
 
 
-@router.delete("/courses")
+@router.put("/courses/{course_name}")
 @grant_access
 @handle_errors
-def delete_courses(request: Request, body=Body()):
-    delete_course_details = body
+def delete_courses(request: Request, course_name: str = Path()):
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
-    validation_response = validate_request_data(
-        delete_course_details, validate_delete_course_schema
-    )
 
-    if validation_response:
-        logger.debug(f"not valid delete course schema --> {validation_response}")
-        return validation_response
-
-    content = course.get_course_list_from_db(4, user_id)
-    name, course_id = check_if_valid_course_name(
-        delete_course_details.get("course_name"), content
-    )
+    content = course.get_course_list_from_db(1, user_id)
+    name, course_id = check_if_valid_course_name(course_name, content)
 
     if not name or not course_id:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content=get_error_response(404, "No such course exists"),
         )
-    # print(name, course_id)
-    message = course.delete_course(delete_course_details.get("name"))
+    message = course.delete_course(course_name)
     return {"message": message}
-    # return message
 
 
 @router.post("/courses/{course_name}")
@@ -260,15 +248,18 @@ def add_course_feedback(request: Request, course_name: str = Path(), body=Body()
     user_id = jwt_token_data.get("user_id")
     user_feedback = body
     course = Courses()
-    content = course.get_course_list_from_db(4, user_id)
+    content = course.get_course_list_from_db(1, user_id)
     validation_response = validate_request_data(user_feedback, feedback_schema)
+    print(user_feedback)
     if validation_response:
         logger.debug(f"not valid feedback schema --> {validation_response}")
         return validation_response, 400
     purchased_course = course.view_purchased_course(user_id)
     for course in purchased_course:
         if course[1].lower() == course_name.lower():
-            ratings = user_feedback["ratings"]
+            ratings = int(user_feedback["ratings"])
+            print(ratings)
+            print(type(ratings))
             comments = user_feedback.get("comments")
             if not comments:
                 comments = "No comments"
@@ -296,7 +287,7 @@ def view_course_faq(request: Request, course_name: str = Path()):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
     faq = Faq()
-    content = course.get_course_list_from_db(4, user_id)
+    content = course.get_course_list_from_db(1, user_id)
     name, course_id = check_if_valid_course_name(course_name, content)
 
     if not name or not course_id:
@@ -325,8 +316,9 @@ def view_course_faq(request: Request, course_name: str = Path()):
 def add_course_faq(request: Request, course_name: str = Path(), body=Body()):
     jwt_token_data = extract_token_data(request)
     user_id = jwt_token_data.get("user_id")
-    content = course.get_course_list_from_db(4, user_id)
+    content = course.get_course_list_from_db(3, user_id)
     faq_data = body
+    print(faq_data)
     if faq_data is None:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,

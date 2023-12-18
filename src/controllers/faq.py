@@ -43,6 +43,8 @@ class Faq:
             string: custom message, whether faq added or course does not exist
         """
         try:
+            db = DatabaseConnection()
+
             is_valid_input = False
             for row in content:
                 if row[4].lower() == course_name.lower():
