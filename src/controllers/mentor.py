@@ -26,11 +26,11 @@ class Mentor(Courses):
             user_id = is_valid_username[0][3]
             user_role = db.get_from_db(QUERIES.get("GET_USER_ROLES"), (user_id,))
             if user_role[0][2] == Roles.MENTOR.value:
-                return PROMPTS.get("ALREADY_A_MENTOR")
+                return PROMPTS.get("ALREADY_A_MENTOR"), 409
 
             db.update_db(
                 QUERIES.get("UPDATE_INTO_USER_ROLES"),
                 (Roles.MENTOR.value, is_valid_username[0][3]),
             )
-            return PROMPTS.get("MENTOR_ADDED_SUCESS")
-        return PROMPTS.get("NO_SUCH_USERNAME")
+            return PROMPTS.get("MENTOR_ADDED_SUCESS"), 201
+        return PROMPTS.get("NO_SUCH_USERNAME"), 404

@@ -1,14 +1,18 @@
 import logging
-from fastapi import Body, Request, APIRouter
+from fastapi import Body, Request, APIRouter, status
+from fastapi.responses import JSONResponse
 from src.controllers.earning import Earning
 from src.controllers.mentor import Mentor
 from src.helpers.handle_error_decorator import handle_errors
 from src.helpers.access_decorator import grant_access
 from src.helpers.jwt_helpers import extract_token_data
-from src.helpers.custom_response import get_error_response
+from src.helpers.custom_response import get_custom_success_response, get_error_response
 from src.helpers.schemas.mentor_schema import mentor_schema
 from src.helpers.validations import validate_request_data
 from src.controllers.courses import Courses, list_course_by_role
+from src.configurations.config import prompts
+
+PROMPTS = prompts
 
 
 router = APIRouter(prefix="", tags=["mentors"])
@@ -20,16 +24,28 @@ logger = logging.getLogger(__name__)
 @handle_errors
 def add_new_mentor(request: Request, body=Body()):
     """Add a new mentor"""
-    print("add_new_mentor")
     mentor_data = body
-    print(mentor_data)
     validation_response = validate_request_data(mentor_data, mentor_schema)
     if validation_response:
         return validation_response
     username = mentor_data.get("username")
     mentor = Mentor()
-    message = mentor.add_mentor(username)
-    return {"message": message}
+    message, status_code = mentor.add_mentor(username)
+    if status_code == 409:
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=get_error_response(409, PROMPTS.get("ALREADY_A_MENTOR")),
+        )
+    elif status_code == 404:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=get_error_response(404, PROMPTS.get("NO_SUCH_USERNAME")),
+        )
+    elif status_code == 201:
+        return JSONResponse(
+            status_code=status.HTTP_201_CREATED,
+            content=get_custom_success_response(201, PROMPTS.get("MENTOR_ADDED_SUCESS"))
+        )
 
 
 @router.get("/mentor")

@@ -51,7 +51,7 @@ class Feedback:
             )
 
             if is_feedback_added is not None:
-                return PROMPTS.get("ALREADY_ADDED_FEEDBACK")
+                return PROMPTS.get("ALREADY_ADDED_FEEDBACK"), 409
 
             db.insert_into_db(QUERIES.get("INSERT_INTO_COURSE_FEEDBACK"), val)
 
@@ -61,6 +61,6 @@ class Feedback:
             ratings = round(ratings[0][0], 2)
 
             db.update_db(QUERIES.get("UPDATE_AVG_RATING"), (ratings, course_id))
-            return PROMPTS.get("FEEDBACK_ADDED_SUCESS")
+            return PROMPTS.get("FEEDBACK_ADDED_SUCESS"), 200
         except:
             raise DbException

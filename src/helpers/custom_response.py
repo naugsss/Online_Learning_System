@@ -9,6 +9,14 @@ def get_error_response(status_code, message):
     }
 
 
+def get_custom_success_response(status_code, message):
+    return {
+        "code": status_code,
+        "message": message,
+        "status": "successful",
+    }
+
+
 def get_success_response(status_code, message, token):
     """Returns a custom success response"""
     return {

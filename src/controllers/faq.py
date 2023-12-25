@@ -53,7 +53,7 @@ class Faq:
                     db.insert_into_db(
                         QUERIES.get("INSERT_FAQ"), (row[3], question, answer)
                     )
-                    return PROMPTS.get("FAQ_ADDED_SUCESS")
+                    return PROMPTS.get("FAQ_ADDED_SUCESS"), 200
             if not is_valid_input:
                 return NotFoundException(PROMPTS.get("NO_SUCH_COURSE"))
         except:

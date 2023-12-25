@@ -45,7 +45,7 @@ def register_user(user_data=Body()):
             "user_id": is_valid[1],
             "username": user_data["username"],
         }
-        access_token = create_access_token(user_data, timedelta(minutes=60))
+        access_token = create_access_token(user_data, timedelta(hours=8))
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content=get_success_response(
@@ -76,7 +76,7 @@ def login_user(response: Response, user_credentials=Body()):
             "role": is_authenticated[0],
             "user_id": is_authenticated[1],
         }
-        access_token = create_access_token(user_data, timedelta(minutes=60))
+        access_token = create_access_token(user_data, timedelta(hours=8))
         # response.set_cookie(key="access_token", value=access_token, httponly=True)
 
         # return get_success_response(200, "Login Successfully", access_token)
@@ -100,7 +100,7 @@ def create_access_token(user_data: dict, expires_delta: Optional[timedelta] = No
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.utcnow() + timedelta(seconds=expires_delta)
     encode.update({"exp": expire})
     val = jwt.encode(encode, SECRET_KEY, algorithm=ALGORTIHM)
 

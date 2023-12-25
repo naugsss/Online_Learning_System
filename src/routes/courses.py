@@ -1,15 +1,14 @@
 import logging
 from fastapi import APIRouter, Body, Request, status, Path
 from fastapi.responses import JSONResponse
-from typing import Optional
+
 from src.helpers.schemas.feedback_schema import feedback_schema
 from src.helpers.schemas.course_schema import (
     course_schema,
     approval_schema,
-    validate_delete_course_schema,
 )
 from src.helpers.schemas.faq_schema import faq_schema
-from src.helpers.custom_response import get_error_response
+from src.helpers.custom_response import get_custom_success_response, get_error_response
 from src.helpers.jwt_helpers import extract_token_data
 from src.controllers.courses import Courses, list_course_by_role
 from src.helpers.setup_logger import InfoLogger
@@ -24,7 +23,9 @@ from src.controllers.faq import Faq
 from src.models.database import db
 from src.configurations.config import sql_queries
 from src.helpers.roles_enum import Roles
+from src.configurations.config import sql_queries, prompts
 
+PROMPTS = prompts
 
 logger = logging.getLogger(__name__)
 QUERIES = sql_queries
@@ -32,24 +33,6 @@ router = APIRouter(prefix="", tags=["courses"])
 course = Courses()
 feedback = Feedback()
 info_logger = InfoLogger(logger)
-
-
-# @router.get("/courses")
-# @handle_errors
-# def get_courses(request: Request):
-#     jwt_token_data = extract_token_data(request)
-#     role = jwt_token_data.get("role")
-#     user_id = jwt_token_data.get("user_id")
-#     content = course.get_course_list_from_db(4, user_id)
-#     try:
-#         if role == Roles.ADMIN.value:
-#             info_logger.log("function called admin")
-#             content = course.get_course_list_from_db(Roles.ADMIN.value, user_id)
-#             return list_course_by_role(content, Roles.ADMIN.value)
-#         else:
-#             return list_course_by_role(content)
-#     except Exception as e:
-#         return e
 
 
 @router.get("/courses")
@@ -78,11 +61,9 @@ def get_courses(request: Request, page=None, size=None):
 
     if role == Roles.ADMIN.value:
         info_logger.log("function called admin")
-        print("admin")
         content, total_count = course.get_course_list_from_db(
             Roles.ADMIN.value, user_id, page, size
         )
-        print("content")
 
         return list_course_by_role(content, Roles.ADMIN.value)
     else:
@@ -106,8 +87,21 @@ def add_course(request: Request, body=Body()):
     content = course_details.get("content")
     duration = course_details.get("duration")
     price = course_details.get("price")
-    response = course.add_course(user_id, name, content, duration, price)
-    return {"message": response}
+    message, status_code = course.add_course(user_id, name, content, duration, price)
+
+    if status_code == 409:
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=get_error_response(409, PROMPTS.get("COURSE_ALREADY_EXISTS")),
+        )
+
+    elif status_code == 201:
+        return JSONResponse(
+            status_code=status.HTTP_201_CREATED,
+            content=get_custom_success_response(
+                201, PROMPTS.get("COURSE_APPROVAL_REQUEST")
+            ),
+        )
 
 
 @router.put("/courses")
@@ -117,9 +111,7 @@ def approve_courses(request: Request, body=Body()):
     user_data = extract_token_data(request)
     user_id = user_data.get("user_id")
     approval_details = body
-    print(approval_details)
     validation_response = validate_request_data(approval_details, approval_schema)
-    print("validation_response")
     if validation_response:
         logger.debug(f"not valid approval schema --> {validation_response}")
         return validation_response
@@ -128,16 +120,25 @@ def approve_courses(request: Request, body=Body()):
     name, course_id = check_if_valid_course_name(
         approval_details.get("course_name"), content
     )
-    print("content")
-    # print(name, course_id, content)
     if not name or not course_id:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content=get_error_response(404, "No such course exists"),
         )
 
-    message = course.approve_course(course_id, approval_details["approval_status"])
-    return {"message": message}
+    message, status_code = course.approve_course(
+        course_id, approval_details["approval_status"]
+    )
+    if status_code == 202:
+        return JSONResponse(
+            status_code=status.HTTP_202_ACCEPTED,
+            content=get_custom_success_response(202, PROMPTS.get("COURSE_APPROVED")),
+        )
+    elif status_code == 200:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=get_custom_success_response(200, PROMPTS.get("COURSE_REJECTED")),
+        )
 
 
 @router.put("/courses/{course_name}")
@@ -155,8 +156,15 @@ def delete_courses(request: Request, course_name: str = Path()):
             status_code=status.HTTP_404_NOT_FOUND,
             content=get_error_response(404, "No such course exists"),
         )
-    message = course.delete_course(course_name)
-    return {"message": message}
+    message, status_code = course.delete_course(course_name)
+    if status_code == status.HTTP_200_OK:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=get_custom_success_response(
+                200,
+                PROMPTS.get("COURSE_DEACTIVATED"),
+            ),
+        )
 
 
 @router.post("/courses/{course_name}")
@@ -173,8 +181,19 @@ def purchase_course(request: Request, course_name: str = Path()):
             content=get_error_response(404, "No such course exists"),
         )
 
-    message = course.purchase_course(user_id, course_id)
-    return {"message": message}
+    message, status_code = course.purchase_course(user_id, course_id)
+    if status_code == 409:
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=get_error_response(409, PROMPTS.get("COURSE_ALREADY_PURCHASED")),
+        )
+    elif status_code == 200:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=get_custom_success_response(
+                200, PROMPTS.get("COURSE_PURCHASED_SUCESS")
+            ),
+        )
 
 
 @router.get("/pending_courses")
@@ -250,7 +269,6 @@ def add_course_feedback(request: Request, course_name: str = Path(), body=Body()
     course = Courses()
     content = course.get_course_list_from_db(1, user_id)
     validation_response = validate_request_data(user_feedback, feedback_schema)
-    print(user_feedback)
     if validation_response:
         logger.debug(f"not valid feedback schema --> {validation_response}")
         return validation_response, 400
@@ -258,8 +276,7 @@ def add_course_feedback(request: Request, course_name: str = Path(), body=Body()
     for course in purchased_course:
         if course[1].lower() == course_name.lower():
             ratings = int(user_feedback["ratings"])
-            print(ratings)
-            print(type(ratings))
+
             comments = user_feedback.get("comments")
             if not comments:
                 comments = "No comments"
@@ -270,10 +287,24 @@ def add_course_feedback(request: Request, course_name: str = Path(), body=Body()
                     content=get_error_response(404, "No such course exists"),
                 )
 
-            message = feedback.add_course_feedback(
+            message, status_code = feedback.add_course_feedback(
                 course_id, ratings, comments, user_id
             )
-            return {"message": message}
+
+            if status_code == 200:
+                return JSONResponse(
+                    status_code=status.HTTP_200_OK,
+                    content=get_custom_success_response(
+                        200, PROMPTS.get("FEEDBACK_ADDED_SUCESS")
+                    ),
+                )
+            elif status_code == 409:
+                return JSONResponse(
+                    status_code=status.HTTP_409_CONFLICT,
+                    content=get_custom_success_response(
+                        409, PROMPTS.get("ALREADY_ADDED_FEEDBACK")
+                    ),
+                )
 
     return JSONResponse(
         status_code=status.HTTP_403_FORBIDDEN,
@@ -297,8 +328,10 @@ def view_course_faq(request: Request, course_name: str = Path()):
         )
     faq = faq.view_faq(course_name)
     if faq is None:
-        return {"message": "No Faq exists for this course"}
-
+        return JSONResponse(
+            status_code=status.HTTP_204_NO_CONTENT,
+            content=get_custom_success_response(404, "No faq exists for this course"),
+        )
     response = []
     for val in faq:
         answer = val[14]
@@ -338,11 +371,14 @@ def add_course_faq(request: Request, course_name: str = Path(), body=Body()):
 
     content = db.get_from_db(QUERIES.get("GET_FAQ_DETAILS"), (user_id,))
     faq = Faq()
-    message = faq.add_faq(
+    message, status_code = faq.add_faq(
         content, faq_data["question"], faq_data["answer"], course_name
     )
-
-    return {"message": message}
+    if status_code == 200:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=get_custom_success_response(200, PROMPTS.get("FAQ_ADDED_SUCESS")),
+        )
 
 
 def list_pending_course():

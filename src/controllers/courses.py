@@ -29,7 +29,7 @@ class Courses:
         """
         result = db.get_from_db(QUERIES.get("GET_DETAILS_COURSES"), (course_name,))
         if len(result) != 0:
-            return PROMPTS.get("COURSE_ALREADY_EXISTS")
+            return PROMPTS.get("COURSE_ALREADY_EXISTS"), 409
         val = (
             course_name,
             content,
@@ -47,7 +47,7 @@ class Courses:
             db.insert_into_db(
                 QUERIES.get("INSERT_INTO_MENTOR_COURSE"), (course_id, user_id)
             )
-            return PROMPTS.get("COURSE_APPROVAL_REQUEST")
+            return PROMPTS.get("COURSE_APPROVAL_REQUEST"), 201
         raise DbException
 
     # def get_course_list_from_db(self, role, user_id):
@@ -110,7 +110,7 @@ class Courses:
                 QUERIES.get("UPDATE_COURSE_STATUS"), ("deactive", course_name)
             )
 
-            return PROMPTS.get("COURSE_DEACTIVATED")
+            return PROMPTS.get("COURSE_DEACTIVATED"), 200
         except:
             raise NotFoundException
 
@@ -124,8 +124,7 @@ class Courses:
         Returns:
             Course Status (string): whether course has been approved or rejected.
         """
-        print("inside approve course")
-        print(course_id, approval_status)
+
         try:
             if approval_status == "approve":
                 response = db.update_db(
@@ -133,12 +132,12 @@ class Courses:
                     ("approved", course_id),
                 )
 
-                return PROMPTS.get("COURSE_APPROVED")
+                return PROMPTS.get("COURSE_APPROVED"), 202
 
             db.delete_from_db(QUERIES.get("DELETE_FROM_MENTOR_COURSE"), (course_id,))
             db.delete_from_db(QUERIES.get("DELETE_FROM_COURSE_FAQ"), (course_id,))
             db.delete_from_db(QUERIES.get("DELETE_FROM_COURSES"), (course_id,))
-            return PROMPTS.get("COURSE_REJECTED")
+            return PROMPTS.get("COURSE_REJECTED"), 200
         except:
             raise DbException
 
@@ -207,9 +206,9 @@ class Courses:
                 raise NotFoundException(PROMPTS.get("PURCHASE_ERROR"))
 
             Login.update_role(user_id)
-            return PROMPTS.get("COURSE_PURCHASED_SUCESS")
+            return PROMPTS.get("COURSE_PURCHASED_SUCESS"), 200
 
-        return PROMPTS.get("COURSE_ALREADY_PURCHASED")
+        return PROMPTS.get("COURSE_ALREADY_PURCHASED"), 409
 
 
 def list_course_by_role(content, role=None):
